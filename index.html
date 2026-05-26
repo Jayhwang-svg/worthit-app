@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#FAF8F4" />
-  <meta name="description" content="Your spending. Their verdict." />
   <link rel="manifest" href="manifest.json" />
   <title>Worth It?</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -23,38 +22,69 @@
     body { background: var(--bg); font-family: var(--font-body); color: var(--ink); min-height: 100vh; }
     ::-webkit-scrollbar { display: none; }
     .app { max-width: 430px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
-    .screen { flex: 1; overflow-y: auto; padding: 0 16px 90px; display: none; }
+    .screen { flex: 1; overflow-y: auto; padding: 0 0 90px; display: none; }
     .screen.active { display: block; }
+
+    /* Bottom Nav */
     .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: var(--bg-card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: flex-end; padding: 8px 16px 28px; z-index: 100; }
     .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; min-width: 60px; }
     .nav-item span { font-size: 10px; font-weight: 600; color: var(--ink-faint); letter-spacing: 0.04em; }
     .nav-item.active span { color: var(--ink); }
     .nav-plus { width: 42px; height: 42px; background: var(--ink); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: -20px; box-shadow: 0 4px 16px rgba(26,23,20,0.15); cursor: pointer; }
-    .header { padding: 20px 0 16px; display: flex; justify-content: space-between; align-items: flex-end; }
-    .header h1 { font-family: var(--font-display); font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
-    .header p { font-size: 12px; color: var(--ink-light); margin-top: 3px; }
-    .cat-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 20px; }
-    .cat-pill { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; background: var(--bg-muted); color: var(--ink-light); border: none; font-family: var(--font-body); }
+
+    /* Header */
+    .feed-header { padding: 20px 16px 12px; display: flex; justify-content: space-between; align-items: center; }
+    .feed-header h1 { font-family: var(--font-display); font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+    .feed-header p { font-size: 11px; color: var(--ink-light); margin-top: 2px; }
+
+    /* Category Pills */
+    .cat-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 0 16px 12px; }
+    .cat-pill { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; background: var(--bg-muted); color: var(--ink-light); border: none; font-family: var(--font-body); flex-shrink: 0; }
     .cat-pill.active { background: var(--ink); color: var(--bg); }
-    .card { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); padding: 16px; margin-bottom: 12px; cursor: pointer; transition: transform 0.1s; }
-    .card:active { transform: scale(0.98); }
-    .card.featured { padding: 20px; box-shadow: 0 4px 24px rgba(26,23,20,0.06); position: relative; overflow: hidden; }
-    .card.featured::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent-dark), var(--accent)); }
-    .card-tag { display: inline-block; padding: 3px 10px; background: var(--bg-muted); border-radius: 20px; font-size: 10px; font-weight: 600; color: var(--ink-light); letter-spacing: 0.06em; text-transform: uppercase; }
-    .card-amount { font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--ink); margin: 10px 0 5px; letter-spacing: -0.02em; }
-    .currency { font-family: var(--font-body); font-size: 12px; font-weight: 500; color: var(--ink-light); vertical-align: super; margin-right: 2px; }
-    .card-desc { font-size: 13px; color: var(--ink-light); line-height: 1.5; margin-bottom: 12px; }
-    .card-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .card-meta span { font-size: 11px; color: var(--ink-faint); font-weight: 500; }
+
+    /* Instagram-style Feed Card */
+    .feed-card { background: var(--bg-card); border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+    .card-image-wrap { position: relative; width: 100%; height: 260px; overflow: hidden; cursor: pointer; }
+    .card-image-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .card-image-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.5) 100%); }
+    .card-image-tag { position: absolute; top: 12px; left: 12px; padding: 4px 10px; background: rgba(255,255,255,0.92); border-radius: 20px; font-size: 10px; font-weight: 700; color: var(--ink); letter-spacing: 0.06em; text-transform: uppercase; backdrop-filter: blur(4px); }
+    .card-image-latest { position: absolute; top: 12px; right: 12px; padding: 4px 10px; background: var(--accent-dark); border-radius: 20px; font-size: 9px; font-weight: 700; color: #fff; letter-spacing: 0.06em; text-transform: uppercase; }
+    .card-image-amount { position: absolute; bottom: 14px; left: 14px; }
+    .card-image-amount .currency { font-family: var(--font-body); font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85); vertical-align: super; margin-right: 2px; }
+    .card-image-amount .amount { font-family: var(--font-display); font-size: 32px; font-weight: 700; color: #fff; letter-spacing: -0.02em; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+
+    /* Card Body */
+    .card-body { padding: 12px 16px 4px; }
+    .card-situation { font-size: 14px; color: var(--ink); line-height: 1.5; margin-bottom: 12px; font-weight: 400; }
+
+    /* Social Bar */
+    .social-bar { display: flex; align-items: center; gap: 0; padding: 4px 16px 14px; border-top: 1px solid var(--border); }
+    .social-btn { display: flex; align-items: center; gap: 5px; padding: 8px 12px 8px 0; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--ink-light); background: none; border: none; font-family: var(--font-body); }
+    .social-btn svg { flex-shrink: 0; }
+    .social-btn.liked { color: var(--expensive); }
+    .vote-count-pill { margin-left: auto; display: flex; align-items: center; gap: 6px; padding: 5px 12px; background: var(--bg-muted); border-radius: 20px; cursor: pointer; }
+    .vote-count-pill span { font-size: 11px; font-weight: 700; color: var(--ink); }
+    .vote-bars-mini { display: flex; gap: 2px; align-items: center; }
+    .vbar-mini { height: 12px; border-radius: 2px; opacity: 0.8; }
+
+    /* Loading */
     .loading { text-align: center; padding: 40px 20px; color: var(--ink-faint); font-size: 14px; }
     .loading-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin: 0 3px; animation: bounce 1.2s infinite; }
     .loading-dot:nth-child(2) { animation-delay: 0.2s; }
     .loading-dot:nth-child(3) { animation-delay: 0.4s; }
     @keyframes bounce { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
+
+    /* Vote Screen */
+    .screen-padded { padding: 0 16px 90px; }
     .back-btn { background: var(--bg-muted); border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 20px; margin: 16px 0 12px; font-family: var(--font-body); font-size: 13px; color: var(--ink-light); font-weight: 500; }
-    .vote-card { background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border); padding: 24px 20px; margin-bottom: 20px; position: relative; overflow: hidden; }
-    .vote-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent-dark), var(--accent)); }
-    .vote-amount { font-family: var(--font-display); font-size: 44px; font-weight: 700; color: var(--ink); margin: 10px 0 4px; letter-spacing: -0.03em; }
+    .vote-hero { position: relative; width: 100%; height: 200px; overflow: hidden; border-radius: 20px; margin-bottom: 16px; }
+    .vote-hero img { width: 100%; height: 100%; object-fit: cover; }
+    .vote-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.55)); border-radius: 20px; }
+    .vote-hero-amount { position: absolute; bottom: 16px; left: 16px; }
+    .vote-hero-amount .currency { font-family: var(--font-body); font-size: 14px; color: rgba(255,255,255,0.8); vertical-align: super; margin-right: 2px; }
+    .vote-hero-amount .amount { font-family: var(--font-display); font-size: 36px; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+    .vote-hero-tag { position: absolute; top: 12px; left: 12px; padding: 4px 10px; background: rgba(255,255,255,0.9); border-radius: 20px; font-size: 10px; font-weight: 700; color: var(--ink); letter-spacing: 0.06em; text-transform: uppercase; }
+    .vote-situation { font-size: 15px; color: var(--ink); line-height: 1.6; margin-bottom: 20px; }
     .vote-label { font-size: 12px; font-weight: 700; color: var(--ink-light); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; }
     .vote-option { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 14px; border: 1.5px solid var(--border); background: var(--bg-card); margin-bottom: 10px; cursor: pointer; transition: all 0.15s; }
     .vote-option.sel-expensive { border-color: var(--expensive); background: rgba(214,78,58,0.05); }
@@ -65,8 +95,10 @@
     .vote-text p { font-size: 12px; color: var(--ink-faint); margin-top: 2px; }
     .comment-box { border: 1.5px solid var(--border); border-radius: 12px; background: var(--bg-card); padding: 12px 14px; margin-top: 16px; display: none; }
     .comment-box textarea { width: 100%; border: none; outline: none; resize: none; font-family: var(--font-body); font-size: 13px; color: var(--ink); background: transparent; line-height: 1.5; height: 56px; }
-    .comment-box .char-count { text-align: right; font-size: 10px; color: var(--ink-faint); }
-    .submit-btn { width: 100%; padding: 16px; background: var(--ink); color: var(--bg); border: none; border-radius: 14px; font-family: var(--font-body); font-size: 14px; font-weight: 600; cursor: pointer; letter-spacing: 0.02em; margin-top: 16px; display: none; }
+    .char-count { text-align: right; font-size: 10px; color: var(--ink-faint); }
+    .submit-btn { width: 100%; padding: 16px; background: var(--ink); color: var(--bg); border: none; border-radius: 14px; font-family: var(--font-body); font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 16px; display: none; }
+
+    /* Post Screen */
     .post-header { padding: 20px 0 16px; }
     .post-header h2 { font-family: var(--font-display); font-size: 24px; font-weight: 700; }
     .form-label { font-size: 11px; font-weight: 700; color: var(--ink-light); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; display: block; }
@@ -74,20 +106,20 @@
     .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
     .cat-btn { padding: 10px 4px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--bg-card); font-family: var(--font-body); font-size: 10px; font-weight: 600; color: var(--ink-light); cursor: pointer; text-align: center; }
     .cat-btn.active { border-color: var(--ink); background: var(--ink); color: var(--bg); }
-    .cat-btn .cat-emoji { font-size: 18px; display: block; margin-bottom: 4px; }
+    .cat-emoji { font-size: 18px; display: block; margin-bottom: 4px; }
     .amount-row { display: flex; gap: 8px; }
     .currency-select { width: 80px; padding: 12px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--bg-card); font-family: var(--font-body); font-size: 14px; color: var(--ink); outline: none; }
     .amount-input { flex: 1; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--bg-card); font-family: var(--font-display); font-size: 20px; color: var(--ink); outline: none; }
-    .amount-input:focus, .currency-select:focus { border-color: var(--ink); }
+    .amount-input:focus, .currency-select:focus, .situation-input:focus { border-color: var(--ink); }
     .situation-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--bg-card); font-family: var(--font-body); font-size: 14px; color: var(--ink); outline: none; resize: none; height: 80px; line-height: 1.5; }
-    .situation-input:focus { border-color: var(--ink); }
     .post-btn { width: 100%; padding: 16px; background: var(--ink); color: var(--bg); border: none; border-radius: 14px; font-family: var(--font-body); font-size: 14px; font-weight: 600; cursor: pointer; }
     .post-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Results */
     .result-card { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); padding: 18px 16px; margin-bottom: 14px; }
-    .section-title { font-size: 11px; font-weight: 700; color: var(--ink); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 14px; }
     .result-bar { margin-bottom: 14px; }
     .result-bar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-    .result-bar-label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; }
+    .result-bar-label { font-size: 13px; font-weight: 600; }
     .result-pct { font-family: var(--font-display); font-size: 16px; font-weight: 700; }
     .bar-track { height: 7px; background: var(--bg-muted); border-radius: 4px; overflow: hidden; }
     .bar-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
@@ -95,107 +127,129 @@
     .filter-tabs { display: flex; gap: 6px; margin-bottom: 16px; }
     .filter-tab { flex: 1; text-align: center; padding: 7px 0; border-radius: 10px; background: var(--bg-muted); color: var(--ink-light); font-size: 11px; font-weight: 600; cursor: pointer; border: none; font-family: var(--font-body); }
     .filter-tab.active { background: var(--ink); color: var(--bg); }
+
+    /* Share Toast */
     .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; font-family: var(--font-body); z-index: 300; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
     .toast.show { opacity: 1; }
   </style>
 </head>
 <body>
 <div class="app">
+
+  <!-- ── FEED ── -->
   <div class="screen active" id="screen-feed">
-    <div class="header">
-      <div><h1>Worth It?</h1><p>Your spending. Their verdict.</p></div>
+    <div class="feed-header">
+      <div>
+        <h1>Worth It?</h1>
+        <p>Your spending. Their verdict.</p>
+      </div>
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="8" r="4" stroke="#6B6560" stroke-width="1.5"/><path d="M3 20c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="#6B6560" stroke-width="1.5" stroke-linecap="round"/></svg>
     </div>
     <div class="cat-scroll">
       <button class="cat-pill active" onclick="filterCat(this,'All')">All</button>
-      <button class="cat-pill" onclick="filterCat(this,'Food & Drink')">Food & Drink</button>
-      <button class="cat-pill" onclick="filterCat(this,'Housing')">Housing</button>
-      <button class="cat-pill" onclick="filterCat(this,'Fashion')">Fashion</button>
-      <button class="cat-pill" onclick="filterCat(this,'Travel')">Travel</button>
-      <button class="cat-pill" onclick="filterCat(this,'Tech')">Tech</button>
+      <button class="cat-pill" onclick="filterCat(this,'Food & Drink')">🍽️ Food</button>
+      <button class="cat-pill" onclick="filterCat(this,'Housing')">🏠 Housing</button>
+      <button class="cat-pill" onclick="filterCat(this,'Fashion')">👗 Fashion</button>
+      <button class="cat-pill" onclick="filterCat(this,'Travel')">✈️ Travel</button>
+      <button class="cat-pill" onclick="filterCat(this,'Tech')">💻 Tech</button>
     </div>
     <div id="feed-list">
       <div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
     </div>
   </div>
 
+  <!-- ── VOTE ── -->
   <div class="screen" id="screen-vote">
-    <button class="back-btn" onclick="goScreen('feed')">
-      <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#6B6560" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Feed
-    </button>
-    <div class="vote-card">
-      <span class="card-tag" id="vote-cat">—</span>
-      <div class="vote-amount"><span class="currency" id="vote-currency"></span><span id="vote-amount">—</span></div>
-      <p class="card-desc" id="vote-desc">—</p>
-      <div class="card-meta"><span id="vote-count">— responses</span></div>
+    <div class="screen-padded">
+      <button class="back-btn" onclick="goScreen('feed')">
+        <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#6B6560" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Feed
+      </button>
+      <div class="vote-hero">
+        <img id="vote-img" src="" alt="" />
+        <div class="vote-hero-overlay"></div>
+        <span class="vote-hero-tag" id="vote-cat">—</span>
+        <div class="vote-hero-amount">
+          <span class="currency" id="vote-currency"></span>
+          <span class="amount" id="vote-amount">—</span>
+        </div>
+      </div>
+      <p class="vote-situation" id="vote-desc">—</p>
+      <p class="vote-label">Your verdict</p>
+      <div class="vote-option" id="opt-expensive" onclick="selectVote('expensive')">
+        <div class="vote-icon">💸</div>
+        <div class="vote-text"><h3>Too Expensive</h3><p>Not worth it at this price</p></div>
+      </div>
+      <div class="vote-option" id="opt-fair" onclick="selectVote('fair')">
+        <div class="vote-icon">✅</div>
+        <div class="vote-text"><h3>Fair Price</h3><p>Seems about right</p></div>
+      </div>
+      <div class="vote-option" id="opt-deal" onclick="selectVote('deal')">
+        <div class="vote-icon">🤑</div>
+        <div class="vote-text"><h3>Great Deal</h3><p>I'd pay that in a heartbeat</p></div>
+      </div>
+      <div class="comment-box" id="comment-box">
+        <textarea id="comment-input" placeholder="Why do you think so? (optional)" maxlength="80" oninput="document.getElementById('char-count').textContent=this.value.length"></textarea>
+        <div class="char-count"><span id="char-count">0</span>/80</div>
+      </div>
+      <button class="submit-btn" id="submit-btn" onclick="submitVote()">Submit Verdict →</button>
     </div>
-    <p class="vote-label">Your verdict</p>
-    <div class="vote-option" id="opt-expensive" onclick="selectVote('expensive')">
-      <div class="vote-icon">💸</div>
-      <div class="vote-text"><h3>Too Expensive</h3><p>Not worth it at this price</p></div>
-    </div>
-    <div class="vote-option" id="opt-fair" onclick="selectVote('fair')">
-      <div class="vote-icon">✅</div>
-      <div class="vote-text"><h3>Fair Price</h3><p>Seems about right</p></div>
-    </div>
-    <div class="vote-option" id="opt-deal" onclick="selectVote('deal')">
-      <div class="vote-icon">🤑</div>
-      <div class="vote-text"><h3>Great Deal</h3><p>I'd pay that in a heartbeat</p></div>
-    </div>
-    <div class="comment-box" id="comment-box">
-      <textarea id="comment-input" placeholder="Why do you think so? (optional)" maxlength="80" oninput="updateCharCount()"></textarea>
-      <div class="char-count"><span id="char-count">0</span>/80</div>
-    </div>
-    <button class="submit-btn" id="submit-btn" onclick="submitVote()">Submit Verdict →</button>
   </div>
 
+  <!-- ── POST ── -->
   <div class="screen" id="screen-post">
-    <div class="post-header">
-      <h2>Ask the community</h2>
-      <p style="font-size:13px;color:var(--ink-light);margin-top:4px;">Is your spending worth it?</p>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Category</label>
-      <div class="cat-grid">
-        <button class="cat-btn" onclick="selectPostCat(this,'Food & Drink')"><span class="cat-emoji">🍽️</span>Food</button>
-        <button class="cat-btn" onclick="selectPostCat(this,'Housing')"><span class="cat-emoji">🏠</span>Housing</button>
-        <button class="cat-btn" onclick="selectPostCat(this,'Fashion')"><span class="cat-emoji">👗</span>Fashion</button>
-        <button class="cat-btn" onclick="selectPostCat(this,'Travel')"><span class="cat-emoji">✈️</span>Travel</button>
-        <button class="cat-btn" onclick="selectPostCat(this,'Tech')"><span class="cat-emoji">💻</span>Tech</button>
-        <button class="cat-btn" onclick="selectPostCat(this,'Health')"><span class="cat-emoji">🏥</span>Health</button>
-        <button class="cat-btn" onclick="selectPostCat(this,'Education')"><span class="cat-emoji">📚</span>Education</button>
-        <button class="cat-btn" onclick="selectPostCat(this,'Other')"><span class="cat-emoji">💡</span>Other</button>
+    <div class="screen-padded">
+      <div class="post-header">
+        <h2>Ask the community</h2>
+        <p style="font-size:13px;color:var(--ink-light);margin-top:4px;">Is your spending worth it?</p>
       </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Amount</label>
-      <div class="amount-row">
-        <select class="currency-select" id="post-currency">
-          <option>USD</option><option>KRW</option><option>CNY</option>
-          <option>EUR</option><option>GBP</option><option>JPY</option>
-        </select>
-        <input class="amount-input" type="number" id="post-amount" placeholder="0" oninput="checkPostReady()" />
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <div class="cat-grid">
+          <button class="cat-btn" onclick="selectPostCat(this,'Food & Drink')"><span class="cat-emoji">🍽️</span>Food</button>
+          <button class="cat-btn" onclick="selectPostCat(this,'Housing')"><span class="cat-emoji">🏠</span>Housing</button>
+          <button class="cat-btn" onclick="selectPostCat(this,'Fashion')"><span class="cat-emoji">👗</span>Fashion</button>
+          <button class="cat-btn" onclick="selectPostCat(this,'Travel')"><span class="cat-emoji">✈️</span>Travel</button>
+          <button class="cat-btn" onclick="selectPostCat(this,'Tech')"><span class="cat-emoji">💻</span>Tech</button>
+          <button class="cat-btn" onclick="selectPostCat(this,'Health')"><span class="cat-emoji">🏥</span>Health</button>
+          <button class="cat-btn" onclick="selectPostCat(this,'Education')"><span class="cat-emoji">📚</span>Education</button>
+          <button class="cat-btn" onclick="selectPostCat(this,'Other')"><span class="cat-emoji">💡</span>Other</button>
+        </div>
       </div>
+      <div class="form-group">
+        <label class="form-label">Amount</label>
+        <div class="amount-row">
+          <select class="currency-select" id="post-currency">
+            <option>USD</option><option>KRW</option><option>CNY</option>
+            <option>EUR</option><option>GBP</option><option>JPY</option>
+          </select>
+          <input class="amount-input" type="number" id="post-amount" placeholder="0" oninput="checkPostReady()" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Situation <span style="color:var(--ink-faint);font-weight:400;text-transform:none;letter-spacing:0">(max 120 chars)</span></label>
+        <textarea class="situation-input" id="post-situation" maxlength="120" placeholder="e.g. Omakase dinner for 2 in Gangnam — 9 courses included." oninput="checkPostReady()"></textarea>
+      </div>
+      <button class="post-btn" id="post-btn" onclick="submitQuestion()" disabled>Post Question</button>
     </div>
-    <div class="form-group">
-      <label class="form-label">Situation <span style="color:var(--ink-faint);font-weight:400;text-transform:none;letter-spacing:0">(max 120 chars)</span></label>
-      <textarea class="situation-input" id="post-situation" maxlength="120" placeholder="e.g. Omakase dinner for 2 in Gangnam — 9 courses included." oninput="checkPostReady()"></textarea>
-    </div>
-    <button class="post-btn" id="post-btn" onclick="submitQuestion()" disabled>Post Question</button>
   </div>
 
+  <!-- ── RESULTS ── -->
   <div class="screen" id="screen-results">
-    <button class="back-btn" onclick="goScreen('feed')">
-      <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#6B6560" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Feed
-    </button>
-    <div class="card" id="results-question-card" style="margin-bottom:14px;cursor:default;"></div>
-    <div class="filter-tabs"><button class="filter-tab active">All</button></div>
-    <div class="result-card" id="results-bars">
-      <div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
+    <div class="screen-padded">
+      <button class="back-btn" onclick="goScreen('feed')">
+        <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#6B6560" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Feed
+      </button>
+      <div id="results-question-card" style="margin-bottom:14px;"></div>
+      <div class="filter-tabs"><button class="filter-tab active">All</button></div>
+      <div class="result-card" id="results-bars">
+        <div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
+      </div>
     </div>
   </div>
 
+  <!-- ── BOTTOM NAV ── -->
   <nav class="bottom-nav">
     <div class="nav-item active" id="nav-feed" onclick="goScreen('feed')">
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="2" width="8" height="8" rx="2" fill="#1A1714"/><rect x="12" y="2" width="8" height="8" rx="2" fill="#1A1714"/><rect x="2" y="12" width="8" height="8" rx="2" fill="#1A1714"/><rect x="12" y="12" width="8" height="8" rx="2" stroke="#6B6560" stroke-width="1.5"/></svg>
@@ -210,7 +264,6 @@
     </div>
   </nav>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
@@ -220,7 +273,20 @@
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVtcm51cG93cXV6eml5aWZyeWdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTY1ODMsImV4cCI6MjA5NTI3MjU4M30.lNeFBXvWBY30khaoXoyBjxTIs2PL3wY08YLP2X6uTXs'
   );
 
+  // Category → Unsplash image
+  const CAT_IMAGES = {
+    'Food & Drink': 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80',
+    'Housing':      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80',
+    'Fashion':      'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80',
+    'Travel':       'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80',
+    'Tech':         'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80',
+    'Health':       'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80',
+    'Education':    'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=80',
+    'Other':        'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80',
+  };
+
   let currentQ = null, selectedVote = null, postCategory = null, allQuestions = [];
+  let likes = JSON.parse(localStorage.getItem('wi_likes') || '{}');
 
   function goScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -238,35 +304,6 @@
     setTimeout(() => t.classList.remove('show'), 2500);
   }
 
-  async function loadFeed() {
-    const { data, error } = await sb.from('questions').select('*').order('created_at', { ascending: false });
-    if (error) { document.getElementById('feed-list').innerHTML = '<div class="loading">Failed to load. Please refresh.</div>'; return; }
-    allQuestions = data || [];
-    renderFeed(allQuestions);
-  }
-
-  function renderFeed(questions) {
-    const list = document.getElementById('feed-list');
-    if (!questions.length) { list.innerHTML = '<div class="loading">No questions yet. Be the first to ask!</div>'; return; }
-    list.innerHTML = questions.map((q, i) => `
-      <div class="card ${i === 0 ? 'featured' : ''}" onclick="openVote('${q.id}')">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-          <span class="card-tag">${q.category}</span>
-          ${i === 0 ? '<span style="font-size:9px;font-weight:700;color:var(--accent-dark);letter-spacing:0.08em;text-transform:uppercase;">Latest</span>' : ''}
-        </div>
-        <div class="card-amount"><span class="currency">${q.currency}</span>${Number(q.amount).toLocaleString()}</div>
-        <p class="card-desc">${q.situation}</p>
-        <div class="card-meta"><span>${q.responses || 0} responses</span><span>·</span><span>${timeLeft(q.expires_at)}</span></div>
-      </div>`).join('');
-  }
-
-  function filterCat(el, cat) {
-    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-    el.classList.add('active');
-    const filtered = cat === 'All' ? allQuestions : allQuestions.filter(q => q.category === cat);
-    renderFeed(filtered);
-  }
-
   function timeLeft(expires) {
     const diff = new Date(expires) - new Date();
     if (diff < 0) return 'Closed';
@@ -274,19 +311,118 @@
     return h < 24 ? `${h}h left` : `${Math.floor(h/24)}d left`;
   }
 
+  function toggleLike(id) {
+    likes[id] = !likes[id];
+    localStorage.setItem('wi_likes', JSON.stringify(likes));
+    const btn = document.getElementById('like-btn-' + id);
+    const count = document.getElementById('like-count-' + id);
+    const base = parseInt(btn.dataset.base || 0);
+    if (likes[id]) {
+      btn.classList.add('liked');
+      btn.querySelector('svg').setAttribute('fill', 'var(--expensive)');
+      count.textContent = base + 1;
+    } else {
+      btn.classList.remove('liked');
+      btn.querySelector('svg').setAttribute('fill', 'none');
+      count.textContent = base;
+    }
+  }
+
+  function shareQ(id, amount, currency, situation) {
+    const url = `${location.origin}?q=${id}`;
+    const text = `Is ${currency} ${Number(amount).toLocaleString()} worth it?\n"${situation}"\nVote on Worth It? 👇`;
+    if (navigator.share) {
+      navigator.share({ title: 'Worth It?', text, url });
+    } else {
+      navigator.clipboard.writeText(url).then(() => showToast('Link copied! 🔗'));
+    }
+  }
+
+  // ── Feed ──
+  async function loadFeed() {
+    const { data, error } = await sb.from('questions').select('*').order('created_at', { ascending: false });
+    if (error) { document.getElementById('feed-list').innerHTML = '<div class="loading">Failed to load.</div>'; return; }
+    allQuestions = data || [];
+    renderFeed(allQuestions);
+  }
+
+  function renderFeed(questions) {
+    const list = document.getElementById('feed-list');
+    if (!questions.length) { list.innerHTML = '<div class="loading">No questions yet. Be the first!</div>'; return; }
+    list.innerHTML = questions.map((q, i) => {
+      const img = CAT_IMAGES[q.category] || CAT_IMAGES['Other'];
+      const baseLikes = Math.floor(q.responses * 0.4 + i * 3);
+      const liked = likes[q.id];
+      const likeCount = baseLikes + (liked ? 1 : 0);
+      return `
+      <div class="feed-card">
+        <div class="card-image-wrap" onclick="openVote('${q.id}')">
+          <img src="${img}" alt="${q.category}" loading="lazy" />
+          <div class="card-image-overlay"></div>
+          <span class="card-image-tag">${q.category}</span>
+          ${i === 0 ? '<span class="card-image-latest">Latest</span>' : ''}
+          <div class="card-image-amount">
+            <span class="currency">${q.currency} </span>
+            <span class="amount">${Number(q.amount).toLocaleString()}</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="card-situation">${q.situation}</p>
+        </div>
+        <div class="social-bar">
+          <button class="social-btn ${liked ? 'liked' : ''}" id="like-btn-${q.id}" data-base="${baseLikes}" onclick="toggleLike('${q.id}')">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="${liked ? 'var(--expensive)' : 'none'}" stroke="${liked ? 'var(--expensive)' : 'currentColor'}" stroke-width="1.5">
+              <path d="M9 15.5S2 11 2 6a4 4 0 0 1 7-2.6A4 4 0 0 1 16 6c0 5-7 9.5-7 9.5z"/>
+            </svg>
+            <span id="like-count-${q.id}">${likeCount}</span>
+          </button>
+          <button class="social-btn" onclick="openVote('${q.id}')">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M16 2H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3v3l4-3h7a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/>
+            </svg>
+            <span>${q.responses || 0}</span>
+          </button>
+          <button class="social-btn" onclick="shareQ('${q.id}',${q.amount},'${q.currency}',\`${q.situation.replace(/`/g,"'")}\`)">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="14" cy="3" r="2"/><circle cx="14" cy="15" r="2"/><circle cx="4" cy="9" r="2"/>
+              <path d="M12 4.5L6 7.5M6 10.5L12 13.5"/>
+            </svg>
+            Share
+          </button>
+          <div class="vote-count-pill" onclick="openVote('${q.id}')">
+            <div class="vote-bars-mini">
+              <div class="vbar-mini" style="width:20px;background:var(--expensive)"></div>
+              <div class="vbar-mini" style="width:10px;background:var(--fair)"></div>
+              <div class="vbar-mini" style="width:5px;background:var(--deal)"></div>
+            </div>
+            <span>Vote</span>
+          </div>
+        </div>
+      </div>`
+    }).join('');
+  }
+
+  function filterCat(el, cat) {
+    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    renderFeed(cat === 'All' ? allQuestions : allQuestions.filter(q => q.category === cat));
+  }
+
+  // ── Vote ──
   async function openVote(id) {
     currentQ = allQuestions.find(q => q.id === id);
     if (!currentQ) return;
+    document.getElementById('vote-img').src = CAT_IMAGES[currentQ.category] || CAT_IMAGES['Other'];
     document.getElementById('vote-cat').textContent = currentQ.category;
     document.getElementById('vote-currency').textContent = currentQ.currency + ' ';
     document.getElementById('vote-amount').textContent = Number(currentQ.amount).toLocaleString();
     document.getElementById('vote-desc').textContent = currentQ.situation;
-    document.getElementById('vote-count').textContent = `${currentQ.responses || 0} responses`;
     selectedVote = null;
     document.querySelectorAll('.vote-option').forEach(o => o.className = 'vote-option');
     document.getElementById('submit-btn').style.display = 'none';
     document.getElementById('comment-box').style.display = 'none';
     document.getElementById('comment-input').value = '';
+    document.getElementById('char-count').textContent = '0';
     goScreen('vote');
   }
 
@@ -298,17 +434,13 @@
     document.getElementById('comment-box').style.display = 'block';
   }
 
-  function updateCharCount() {
-    document.getElementById('char-count').textContent = document.getElementById('comment-input').value.length;
-  }
-
   async function submitVote() {
     if (!selectedVote || !currentQ) return;
     const btn = document.getElementById('submit-btn');
     btn.disabled = true; btn.textContent = 'Submitting...';
     const comment = document.getElementById('comment-input').value.trim();
     const { error } = await sb.from('votes').insert({ question_id: currentQ.id, verdict: selectedVote, comment: comment || null });
-    if (error) { showToast('Something went wrong. Try again!'); btn.disabled = false; btn.textContent = 'Submit Verdict →'; return; }
+    if (error) { showToast('Something went wrong!'); btn.disabled = false; btn.textContent = 'Submit Verdict →'; return; }
     await sb.from('questions').update({ responses: (currentQ.responses || 0) + 1 }).eq('id', currentQ.id);
     currentQ.responses = (currentQ.responses || 0) + 1;
     showToast('Verdict submitted! 🎉');
@@ -318,14 +450,28 @@
     loadFeed();
   }
 
+  // ── Results ──
   async function loadResults(id) {
     const q = allQuestions.find(q => q.id === id) || currentQ;
     if (!q) return;
+    const img = CAT_IMAGES[q.category] || CAT_IMAGES['Other'];
     document.getElementById('results-question-card').innerHTML = `
-      <span class="card-tag">${q.category}</span>
-      <div class="card-amount" style="font-size:28px;"><span class="currency">${q.currency}</span>${Number(q.amount).toLocaleString()}</div>
-      <p class="card-desc">${q.situation}</p>
-      <div class="card-meta"><span>${q.responses || 0} responses</span><span>·</span><span>${timeLeft(q.expires_at)}</span></div>`;
+      <div style="position:relative;height:140px;border-radius:16px;overflow:hidden;margin-bottom:14px;">
+        <img src="${img}" style="width:100%;height:100%;object-fit:cover;" />
+        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.1),rgba(0,0,0,0.6));border-radius:16px;"></div>
+        <span style="position:absolute;top:12px;left:12px;padding:4px 10px;background:rgba(255,255,255,0.9);border-radius:20px;font-size:10px;font-weight:700;color:var(--ink);letter-spacing:0.06em;text-transform:uppercase;">${q.category}</span>
+        <div style="position:absolute;bottom:12px;left:14px;">
+          <span style="font-family:var(--font-body);font-size:12px;color:rgba(255,255,255,0.8);vertical-align:super;margin-right:2px;">${q.currency}</span>
+          <span style="font-family:var(--font-display);font-size:28px;font-weight:700;color:#fff;letter-spacing:-0.02em;">${Number(q.amount).toLocaleString()}</span>
+        </div>
+      </div>
+      <p style="font-size:14px;color:var(--ink-light);line-height:1.5;margin-bottom:8px;">${q.situation}</p>
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <span style="font-size:11px;color:var(--ink-faint);font-weight:500;">${q.responses || 0} responses</span>
+        <span style="font-size:11px;color:var(--ink-faint);">·</span>
+        <span style="font-size:11px;color:var(--ink-faint);font-weight:500;">${timeLeft(q.expires_at)}</span>
+      </div>`;
+
     const { data: votes } = await sb.from('votes').select('verdict').eq('question_id', id);
     const total = votes?.length || 0;
     const exp = votes?.filter(v => v.verdict === 'expensive').length || 0;
@@ -337,6 +483,7 @@
       : fPct >= dPct ? '✅ Most people think it\'s fair' : '🤑 Most people think it\'s a great deal';
     const topColor = ePct >= fPct && ePct >= dPct ? 'var(--expensive)' : fPct >= dPct ? 'var(--fair)' : 'var(--deal)';
     const topBg = ePct >= fPct && ePct >= dPct ? 'rgba(214,78,58,0.08)' : fPct >= dPct ? 'rgba(74,124,89,0.08)' : 'rgba(46,106,168,0.08)';
+
     document.getElementById('results-bars').innerHTML = total === 0
       ? '<div class="loading">No votes yet. Be the first!</div>'
       : `<div class="result-bar">
@@ -355,6 +502,7 @@
         <div style="margin-top:12px;font-size:11px;color:var(--ink-faint);text-align:center;">${total} total vote${total !== 1 ? 's' : ''}</div>`;
   }
 
+  // ── Post ──
   function selectPostCat(el, cat) {
     document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
     el.classList.add('active');
@@ -377,13 +525,12 @@
       amount: parseInt(document.getElementById('post-amount').value),
       situation: document.getElementById('post-situation').value.trim(),
     }).select().single();
-    if (error) { showToast('Failed to post. Try again!'); btn.disabled = false; btn.textContent = 'Post Question'; return; }
+    if (error) { showToast('Failed to post!'); btn.disabled = false; btn.textContent = 'Post Question'; return; }
     showToast('Question posted! 🎉');
     document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('post-amount').value = '';
     document.getElementById('post-situation').value = '';
-    postCategory = null;
-    btn.textContent = 'Post Question';
+    postCategory = null; btn.textContent = 'Post Question';
     await loadFeed();
     allQuestions.unshift(data);
     await loadResults(data.id);
