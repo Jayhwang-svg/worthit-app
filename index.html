@@ -1,188 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#FAF8F4" />
-  <link rel="manifest" href="manifest.json" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#F5F3EF"/>
+  <link rel="manifest" href="manifest.json"/>
   <title>Worth It?</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #F5F3EF; --bg-card: #FFFFFF; --bg-muted: #EDEBE6;
-      --ink: #1A1714; --ink-light: #6B6560; --ink-faint: #B8B3AC;
-      --accent: #C4A882; --accent-dark: #8B6F4E;
-      --expensive: #D64E3A; --fair: #4A7C59; --deal: #2E6AA8;
-      --border: #E4E0D9;
-      --font-display: 'Playfair Display', Georgia, serif;
-      --font-body: 'DM Sans', 'Helvetica Neue', sans-serif;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#F5F3EF;--bg-card:#FFFFFF;--bg-muted:#EDEBE6;
+      --ink:#1A1714;--ink-light:#6B6560;--ink-faint:#B8B3AC;
+      --accent:#C4A882;--accent-dark:#8B6F4E;
+      --expensive:#D64E3A;--fair:#4A7C59;--deal:#2E6AA8;
+      --border:#E4E0D9;
+      --fd:'Playfair Display',Georgia,serif;
+      --fb:'DM Sans','Helvetica Neue',sans-serif;
     }
-    body { background: var(--bg); font-family: var(--font-body); color: var(--ink); min-height: 100vh; }
-    ::-webkit-scrollbar { display: none; }
-    .app { max-width: 430px; margin: 0 auto; min-height: 100vh; }
-    .screen { overflow-y: auto; padding-bottom: 90px; display: none; }
-    .screen.active { display: block; }
+    body{background:var(--bg);font-family:var(--fb);color:var(--ink);min-height:100vh}
+    ::-webkit-scrollbar{display:none}
+    .app{max-width:430px;margin:0 auto;min-height:100vh}
+    .screen{overflow-y:auto;padding-bottom:90px;display:none}
+    .screen.active{display:block}
 
-    /* ── Header ── */
-    .feed-header { padding: 20px 16px 8px; display: flex; justify-content: space-between; align-items: center; }
-    .feed-header h1 { font-family: var(--font-display); font-size: 30px; font-weight: 700; letter-spacing: -0.03em; }
-    .header-filter { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    /* Header */
+    .feed-header{padding:22px 16px 10px;display:flex;justify-content:space-between;align-items:center}
+    .feed-header h1{font-family:var(--fd);font-size:32px;font-weight:700;letter-spacing:-0.03em}
+    .feed-header p{font-size:12px;color:var(--ink-light);margin-top:3px}
+    .header-filter{width:38px;height:38px;border-radius:50%;background:var(--bg-card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer}
 
-    /* ── Category Pills ── */
-    .cat-scroll { display: flex; gap: 8px; padding: 8px 16px 16px; overflow-x: auto; }
-    .cat-pill { padding: 7px 16px; border-radius: 30px; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; background: var(--bg-card); color: var(--ink-light); border: 1px solid var(--border); font-family: var(--font-body); flex-shrink: 0; transition: all 0.15s; }
-    .cat-pill.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+    /* Category pills */
+    .cat-scroll{display:flex;gap:8px;padding:6px 16px 14px;overflow-x:auto}
+    .cat-pill{padding:7px 16px;border-radius:30px;font-size:13px;font-weight:600;white-space:nowrap;cursor:pointer;background:var(--bg-card);color:var(--ink-light);border:1px solid var(--border);font-family:var(--fb);flex-shrink:0;transition:all .15s}
+    .cat-pill.active{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 
-    /* ── Masonry Grid ── */
-    .masonry { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 10px; }
+    /* ── EDITORIAL GRID ── */
+    .edit-grid{padding:0 10px;display:flex;flex-direction:column;gap:10px}
+
+    /* Each "block" of 3 rows */
+    .edit-block{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto;gap:10px}
+
+    /* Cell placements */
+    .cell-img-tall{grid-column:1;grid-row:1/3}   /* left col, spans rows 1-2 */
+    .cell-txt-sm  {grid-column:2;grid-row:1}      /* right col row 1: small text */
+    .cell-txt-lg  {grid-column:2;grid-row:2}      /* right col row 2: big text */
+    .cell-txt-bot {grid-column:1;grid-row:3}      /* left col row 3: white text */
+    .cell-img-bot {grid-column:2;grid-row:3}      /* right col row 3: image */
 
     /* Base card */
-    .m-card { border-radius: 20px; overflow: hidden; cursor: pointer; position: relative; transition: transform 0.15s; background: var(--bg-card); }
-    .m-card:active { transform: scale(0.97); }
+    .m-card{border-radius:20px;overflow:hidden;cursor:pointer;transition:transform .15s}
+    .m-card:active{transform:scale(0.97)}
 
     /* Image card */
-    .m-card.img-card { background: #1A1714; }
-    .m-card.img-card img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.88; }
-    .m-card.img-card .card-inner { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 12px; }
+    .img-card{position:relative;background:#1a1a1a}
+    .img-card img{width:100%;height:100%;object-fit:cover;display:block;opacity:.9}
+    .img-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.05) 0%,rgba(0,0,0,0) 30%,rgba(0,0,0,.65) 100%)}
+    .img-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:12px}
 
-    /* Text card */
-    .m-card.txt-card { background: var(--bg-card); border: 1px solid var(--border); }
-    .m-card.txt-card .card-inner { padding: 14px; height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+    /* Tall image: fixed heights */
+    .cell-img-tall{min-height:300px}
+    .cell-img-bot{height:160px}
+    .cell-img-bot img{width:100%;height:100%;object-fit:cover;display:block}
 
-    /* Tall / short sizes */
-    .m-card.tall { min-height: 280px; }
-    .m-card.mid  { min-height: 200px; }
-    .m-card.short{ min-height: 150px; }
+    /* Text cards */
+    .txt-card{background:var(--bg-card);border:1px solid var(--border);display:flex;flex-direction:column;justify-content:space-between;padding:14px}
+    .cell-txt-sm{min-height:100px}
+    .cell-txt-lg{min-height:190px}
+    .cell-txt-bot{min-height:160px}
 
-    /* Card header row */
-    .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
-    .card-cat { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
-    .img-card .card-cat { color: rgba(255,255,255,0.7); }
-    .txt-card .card-cat { color: var(--ink-faint); }
-    .card-arrow { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .img-card .card-arrow { background: rgba(255,255,255,0.15); }
-    .txt-card .card-arrow { background: var(--bg-muted); }
+    /* Card top row */
+    .card-top{display:flex;justify-content:space-between;align-items:flex-start}
+    .card-cat-label{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+    .img-card .card-cat-label{color:rgba(255,255,255,.7)}
+    .txt-card .card-cat-label{color:var(--ink-faint)}
+    .card-arrow{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .img-card .card-arrow{background:rgba(255,255,255,.15)}
+    .txt-card .card-arrow{background:var(--bg-muted)}
 
     /* Amount */
-    .card-amount { font-family: var(--font-display); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
-    .img-card .card-amount { color: #fff; }
-    .txt-card .card-amount { color: var(--ink); }
-    .amount-lg { font-size: 34px; }
-    .amount-md { font-size: 28px; }
-    .amount-sm { font-size: 22px; }
-    .card-currency { font-family: var(--font-body); font-weight: 500; opacity: 0.7; vertical-align: super; margin-right: 1px; }
-    .amount-lg .card-currency { font-size: 13px; }
-    .amount-md .card-currency { font-size: 11px; }
-    .amount-sm .card-currency { font-size: 10px; }
+    .card-amount{font-family:var(--fd);font-weight:700;line-height:1.05;letter-spacing:-.025em}
+    .img-card .card-amount{color:#fff}
+    .txt-card .card-amount{color:var(--ink)}
+    .sz-xl{font-size:36px}
+    .sz-lg{font-size:28px}
+    .sz-md{font-size:22px}
+    .sz-sm{font-size:18px}
+    .amt-cur{font-family:var(--fb);font-weight:500;opacity:.7;vertical-align:super;font-size:.38em;margin-right:1px}
 
-    /* Situation */
-    .card-desc { font-size: 11px; line-height: 1.4; margin-top: 6px; }
-    .img-card .card-desc { color: rgba(255,255,255,0.75); }
-    .txt-card .card-desc { color: var(--ink-light); }
+    /* Desc */
+    .card-desc-txt{font-size:11px;line-height:1.4;margin-top:5px}
+    .img-card .card-desc-txt{color:rgba(255,255,255,.72)}
+    .txt-card .card-desc-txt{color:var(--ink-light)}
 
-    /* Card footer */
-    .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
-    .card-votes { display: flex; align-items: center; gap: 4px; }
-    .vote-dot { width: 5px; height: 5px; border-radius: 50%; }
-    .card-votes span { font-size: 10px; font-weight: 600; }
-    .img-card .card-votes span { color: rgba(255,255,255,0.6); }
-    .txt-card .card-votes span { color: var(--ink-faint); }
-
-    /* Social */
-    .card-like { display: flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 600; }
-    .img-card .card-like { color: rgba(255,255,255,0.6); }
-    .txt-card .card-like { color: var(--ink-faint); }
-
-    /* Full-width featured card */
-    .m-card.full { grid-column: 1 / -1; min-height: 200px; }
-    .m-card.full img { height: 200px; }
-    .m-card.full .card-amount { font-size: 40px; }
+    /* Footer */
+    .card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+    .vote-info{display:flex;align-items:center;gap:4px}
+    .vdot{width:5px;height:5px;border-radius:50%}
+    .vote-info span,.like-info{font-size:10px;font-weight:600}
+    .img-card .vote-info span{color:rgba(255,255,255,.55)}
+    .txt-card .vote-info span{color:var(--ink-faint)}
+    .like-info{display:flex;align-items:center;gap:3px}
+    .img-card .like-info{color:rgba(255,255,255,.55)}
+    .txt-card .like-info{color:var(--ink-faint)}
 
     /* Loading */
-    .loading { text-align: center; padding: 40px 20px; color: var(--ink-faint); }
-    .loading-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin: 0 3px; animation: bounce 1.2s infinite; }
-    .loading-dot:nth-child(2) { animation-delay: 0.2s; }
-    .loading-dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes bounce { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
+    .loading{text-align:center;padding:40px 20px;color:var(--ink-faint)}
+    .ld{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin:0 3px;animation:bop 1.2s infinite}
+    .ld:nth-child(2){animation-delay:.2s}.ld:nth-child(3){animation-delay:.4s}
+    @keyframes bop{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
 
-    /* ── Vote Screen ── */
-    .screen-padded { padding: 0 16px 90px; }
-    .back-btn { background: var(--bg-card); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 30px; margin: 16px 0 14px; font-family: var(--font-body); font-size: 13px; color: var(--ink-light); font-weight: 600; }
-    .vote-hero { position: relative; width: 100%; height: 220px; overflow: hidden; border-radius: 24px; margin-bottom: 18px; }
-    .vote-hero img { width: 100%; height: 100%; object-fit: cover; }
-    .vote-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.6)); border-radius: 24px; }
-    .vote-hero-tag { position: absolute; top: 14px; left: 14px; padding: 5px 12px; background: rgba(255,255,255,0.9); border-radius: 30px; font-size: 10px; font-weight: 700; color: var(--ink); letter-spacing: 0.06em; text-transform: uppercase; backdrop-filter: blur(4px); }
-    .vote-hero-amount { position: absolute; bottom: 18px; left: 18px; }
-    .vote-hero-amount .currency { font-family: var(--font-body); font-size: 14px; color: rgba(255,255,255,0.8); vertical-align: super; margin-right: 2px; }
-    .vote-hero-amount .amount { font-family: var(--font-display); font-size: 40px; font-weight: 700; color: #fff; letter-spacing: -0.03em; }
-    .vote-situation { font-size: 15px; color: var(--ink-light); line-height: 1.6; margin-bottom: 22px; }
-    .vote-label { font-size: 11px; font-weight: 700; color: var(--ink-faint); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 12px; }
-    .vote-option { display: flex; align-items: center; gap: 14px; padding: 15px 16px; border-radius: 16px; border: 1.5px solid var(--border); background: var(--bg-card); margin-bottom: 10px; cursor: pointer; transition: all 0.15s; }
-    .vote-option.sel-expensive { border-color: var(--expensive); background: rgba(214,78,58,0.05); }
-    .vote-option.sel-fair { border-color: var(--fair); background: rgba(74,124,89,0.05); }
-    .vote-option.sel-deal { border-color: var(--deal); background: rgba(46,106,168,0.05); }
-    .vote-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--bg-muted); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-    .vote-text h3 { font-size: 14px; font-weight: 700; color: var(--ink); }
-    .vote-text p { font-size: 12px; color: var(--ink-faint); margin-top: 2px; }
-    .comment-box { border: 1.5px solid var(--border); border-radius: 16px; background: var(--bg-card); padding: 14px; margin-top: 16px; display: none; }
-    .comment-box textarea { width: 100%; border: none; outline: none; resize: none; font-family: var(--font-body); font-size: 13px; color: var(--ink); background: transparent; line-height: 1.5; height: 60px; }
-    .char-count { text-align: right; font-size: 10px; color: var(--ink-faint); }
-    .submit-btn { width: 100%; padding: 17px; background: var(--ink); color: var(--bg); border: none; border-radius: 16px; font-family: var(--font-body); font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 16px; display: none; letter-spacing: 0.01em; }
+    /* ── Vote ── */
+    .sp{padding:0 16px 90px}
+    .back-btn{background:var(--bg-card);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:30px;margin:16px 0 14px;font-family:var(--fb);font-size:13px;color:var(--ink-light);font-weight:600}
+    .vote-hero{position:relative;width:100%;height:220px;overflow:hidden;border-radius:24px;margin-bottom:18px}
+    .vote-hero img{width:100%;height:100%;object-fit:cover}
+    .vh-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.08),rgba(0,0,0,.62));border-radius:24px}
+    .vh-tag{position:absolute;top:14px;left:14px;padding:5px 12px;background:rgba(255,255,255,.9);border-radius:30px;font-size:10px;font-weight:700;color:var(--ink);letter-spacing:.06em;text-transform:uppercase;backdrop-filter:blur(4px)}
+    .vh-amt{position:absolute;bottom:18px;left:18px}
+    .vh-amt .cur{font-family:var(--fb);font-size:14px;color:rgba(255,255,255,.8);vertical-align:super;margin-right:2px}
+    .vh-amt .num{font-family:var(--fd);font-size:40px;font-weight:700;color:#fff;letter-spacing:-.03em}
+    .v-sit{font-size:15px;color:var(--ink-light);line-height:1.6;margin-bottom:22px}
+    .v-lbl{font-size:11px;font-weight:700;color:var(--ink-faint);letter-spacing:.07em;text-transform:uppercase;margin-bottom:12px}
+    .v-opt{display:flex;align-items:center;gap:14px;padding:15px 16px;border-radius:16px;border:1.5px solid var(--border);background:var(--bg-card);margin-bottom:10px;cursor:pointer;transition:all .15s}
+    .v-opt.se{border-color:var(--expensive);background:rgba(214,78,58,.05)}
+    .v-opt.sf{border-color:var(--fair);background:rgba(74,124,89,.05)}
+    .v-opt.sd{border-color:var(--deal);background:rgba(46,106,168,.05)}
+    .v-ico{width:40px;height:40px;border-radius:50%;background:var(--bg-muted);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+    .v-txt h3{font-size:14px;font-weight:700;color:var(--ink)}
+    .v-txt p{font-size:12px;color:var(--ink-faint);margin-top:2px}
+    .cmt-box{border:1.5px solid var(--border);border-radius:16px;background:var(--bg-card);padding:14px;margin-top:16px;display:none}
+    .cmt-box textarea{width:100%;border:none;outline:none;resize:none;font-family:var(--fb);font-size:13px;color:var(--ink);background:transparent;line-height:1.5;height:60px}
+    .cc{text-align:right;font-size:10px;color:var(--ink-faint)}
+    .sub-btn{width:100%;padding:17px;background:var(--ink);color:var(--bg);border:none;border-radius:16px;font-family:var(--fb);font-size:15px;font-weight:700;cursor:pointer;margin-top:16px;display:none}
 
-    /* ── Post Screen ── */
-    .post-header { padding: 20px 0 18px; }
-    .post-header h2 { font-family: var(--font-display); font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
-    .post-header p { font-size: 13px; color: var(--ink-light); margin-top: 4px; }
-    .form-label { font-size: 11px; font-weight: 700; color: var(--ink-faint); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 10px; display: block; }
-    .form-group { margin-bottom: 22px; }
-    .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-    .cat-btn { padding: 12px 4px; border-radius: 14px; border: 1.5px solid var(--border); background: var(--bg-card); font-family: var(--font-body); font-size: 10px; font-weight: 700; color: var(--ink-light); cursor: pointer; text-align: center; transition: all 0.12s; }
-    .cat-btn.active { border-color: var(--ink); background: var(--ink); color: var(--bg); }
-    .cat-emoji { font-size: 20px; display: block; margin-bottom: 5px; }
-    .amount-row { display: flex; gap: 8px; }
-    .currency-select { width: 82px; padding: 13px; border: 1.5px solid var(--border); border-radius: 14px; background: var(--bg-card); font-family: var(--font-body); font-size: 14px; color: var(--ink); outline: none; }
-    .amount-input { flex: 1; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: 14px; background: var(--bg-card); font-family: var(--font-display); font-size: 22px; color: var(--ink); outline: none; }
-    .amount-input:focus, .currency-select:focus, .situation-input:focus { border-color: var(--ink); }
-    .situation-input { width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: 14px; background: var(--bg-card); font-family: var(--font-body); font-size: 14px; color: var(--ink); outline: none; resize: none; height: 88px; line-height: 1.5; }
-    .post-btn { width: 100%; padding: 17px; background: var(--ink); color: var(--bg); border: none; border-radius: 16px; font-family: var(--font-body); font-size: 15px; font-weight: 700; cursor: pointer; }
-    .post-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    /* ── Post ── */
+    .ph{padding:20px 0 18px}
+    .ph h2{font-family:var(--fd);font-size:26px;font-weight:700;letter-spacing:-.02em}
+    .ph p{font-size:13px;color:var(--ink-light);margin-top:4px}
+    .fl{font-size:11px;font-weight:700;color:var(--ink-faint);letter-spacing:.07em;text-transform:uppercase;margin-bottom:10px;display:block}
+    .fg{margin-bottom:22px}
+    .cg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+    .cb{padding:12px 4px;border-radius:14px;border:1.5px solid var(--border);background:var(--bg-card);font-family:var(--fb);font-size:10px;font-weight:700;color:var(--ink-light);cursor:pointer;text-align:center;transition:all .12s}
+    .cb.active{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+    .ce{font-size:20px;display:block;margin-bottom:5px}
+    .ar{display:flex;gap:8px}
+    .cs{width:82px;padding:13px;border:1.5px solid var(--border);border-radius:14px;background:var(--bg-card);font-family:var(--fb);font-size:14px;color:var(--ink);outline:none}
+    .ai{flex:1;padding:13px 16px;border:1.5px solid var(--border);border-radius:14px;background:var(--bg-card);font-family:var(--fd);font-size:22px;color:var(--ink);outline:none}
+    .ai:focus,.cs:focus,.si:focus{border-color:var(--ink)}
+    .si{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:14px;background:var(--bg-card);font-family:var(--fb);font-size:14px;color:var(--ink);outline:none;resize:none;height:88px;line-height:1.5}
+    .pb{width:100%;padding:17px;background:var(--ink);color:var(--bg);border:none;border-radius:16px;font-family:var(--fb);font-size:15px;font-weight:700;cursor:pointer}
+    .pb:disabled{opacity:.35;cursor:not-allowed}
 
     /* ── Results ── */
-    .result-card { background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border); padding: 18px; margin-bottom: 14px; }
-    .result-bar { margin-bottom: 14px; }
-    .result-bar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .result-bar-label { font-size: 13px; font-weight: 600; }
-    .result-pct { font-family: var(--font-display); font-size: 17px; font-weight: 700; }
-    .bar-track { height: 8px; background: var(--bg-muted); border-radius: 4px; overflow: hidden; }
-    .bar-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
-    .verdict-box { padding: 12px 14px; border-radius: 12px; margin-top: 14px; font-size: 13px; font-weight: 600; }
-    .filter-tabs { display: flex; gap: 6px; margin-bottom: 16px; }
-    .filter-tab { flex: 1; text-align: center; padding: 8px 0; border-radius: 30px; background: var(--bg-card); border: 1px solid var(--border); color: var(--ink-light); font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--font-body); }
-    .filter-tab.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+    .rc{background:var(--bg-card);border-radius:20px;border:1px solid var(--border);padding:18px;margin-bottom:14px}
+    .rb{margin-bottom:14px}
+    .rbh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+    .rbl{font-size:13px;font-weight:600}
+    .rp{font-family:var(--fd);font-size:17px;font-weight:700}
+    .bt{height:8px;background:var(--bg-muted);border-radius:4px;overflow:hidden}
+    .bf{height:100%;border-radius:4px;transition:width .8s ease}
+    .vb{padding:12px 14px;border-radius:12px;margin-top:14px;font-size:13px;font-weight:600}
+    .ft{display:flex;gap:6px;margin-bottom:16px}
+    .ftb{flex:1;text-align:center;padding:8px 0;border-radius:30px;background:var(--bg-card);border:1px solid var(--border);color:var(--ink-light);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--fb)}
+    .ftb.active{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 
-    /* ── Bottom Nav ── */
-    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: rgba(245,243,239,0.92); backdrop-filter: blur(12px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: flex-end; padding: 10px 24px 28px; z-index: 100; }
-    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; min-width: 60px; }
-    .nav-item span { font-size: 10px; font-weight: 600; color: var(--ink-faint); letter-spacing: 0.04em; }
-    .nav-item.active span { color: var(--ink); }
-    .nav-plus { width: 48px; height: 48px; background: var(--ink); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: -22px; box-shadow: 0 4px 20px rgba(26,23,20,0.2); cursor: pointer; }
+    /* ── Nav ── */
+    .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(245,243,239,.94);backdrop-filter:blur(14px);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:flex-end;padding:10px 24px 28px;z-index:100}
+    .ni{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;min-width:60px}
+    .ni span{font-size:10px;font-weight:600;color:var(--ink-faint);letter-spacing:.04em}
+    .ni.active span{color:var(--ink)}
+    .np{width:48px;height:48px;background:var(--ink);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:-22px;box-shadow:0 4px 20px rgba(26,23,20,.2);cursor:pointer}
 
     /* Toast */
-    .toast { position: fixed; bottom: 110px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 12px 22px; border-radius: 30px; font-size: 13px; font-weight: 600; font-family: var(--font-body); z-index: 300; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
-    .toast.show { opacity: 1; }
+    .toast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 22px;border-radius:30px;font-size:13px;font-weight:600;font-family:var(--fb);z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+    .toast.show{opacity:1}
   </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- ── FEED ── -->
+  <!-- FEED -->
   <div class="screen active" id="screen-feed">
     <div class="feed-header">
       <div>
         <h1>Worth It?</h1>
-        <p style="font-size:12px;color:var(--ink-light);margin-top:2px;">Your spending. Their verdict.</p>
+        <p>Your spending. Their verdict.</p>
       </div>
       <div class="header-filter">
         <svg width="16" height="14" viewBox="0 0 16 14" fill="none"><path d="M1 2h14M3 7h10M6 12h4" stroke="#6B6560" stroke-width="1.6" stroke-linecap="round"/></svg>
@@ -197,111 +201,97 @@
       <button class="cat-pill" onclick="filterCat(this,'Tech')">💻 Tech</button>
     </div>
     <div id="feed-list">
-      <div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
+      <div class="loading"><div class="ld"></div><div class="ld"></div><div class="ld"></div></div>
     </div>
   </div>
 
-  <!-- ── VOTE ── -->
+  <!-- VOTE -->
   <div class="screen" id="screen-vote">
-    <div class="screen-padded">
+    <div class="sp">
       <button class="back-btn" onclick="goScreen('feed')">
-        <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#6B6560" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Back
+        <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#6B6560" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Back
       </button>
       <div class="vote-hero">
-        <img id="vote-img" src="" alt="" />
-        <div class="vote-hero-overlay"></div>
-        <span class="vote-hero-tag" id="vote-cat">—</span>
-        <div class="vote-hero-amount">
-          <span class="currency" id="vote-currency"></span>
-          <span class="amount" id="vote-amount">—</span>
-        </div>
+        <img id="vote-img" src="" alt=""/>
+        <div class="vh-overlay"></div>
+        <span class="vh-tag" id="vote-cat">—</span>
+        <div class="vh-amt"><span class="cur" id="vote-cur"></span><span class="num" id="vote-num">—</span></div>
       </div>
-      <p class="vote-situation" id="vote-desc">—</p>
-      <p class="vote-label">Your verdict</p>
-      <div class="vote-option" id="opt-expensive" onclick="selectVote('expensive')">
-        <div class="vote-icon">💸</div>
-        <div class="vote-text"><h3>Too Expensive</h3><p>Not worth it at this price</p></div>
+      <p class="v-sit" id="vote-desc">—</p>
+      <p class="v-lbl">Your verdict</p>
+      <div class="v-opt" id="opt-expensive" onclick="sv('expensive')">
+        <div class="v-ico">💸</div><div class="v-txt"><h3>Too Expensive</h3><p>Not worth it at this price</p></div>
       </div>
-      <div class="vote-option" id="opt-fair" onclick="selectVote('fair')">
-        <div class="vote-icon">✅</div>
-        <div class="vote-text"><h3>Fair Price</h3><p>Seems about right</p></div>
+      <div class="v-opt" id="opt-fair" onclick="sv('fair')">
+        <div class="v-ico">✅</div><div class="v-txt"><h3>Fair Price</h3><p>Seems about right</p></div>
       </div>
-      <div class="vote-option" id="opt-deal" onclick="selectVote('deal')">
-        <div class="vote-icon">🤑</div>
-        <div class="vote-text"><h3>Great Deal</h3><p>I'd pay that in a heartbeat</p></div>
+      <div class="v-opt" id="opt-deal" onclick="sv('deal')">
+        <div class="v-ico">🤑</div><div class="v-txt"><h3>Great Deal</h3><p>I'd pay that in a heartbeat</p></div>
       </div>
-      <div class="comment-box" id="comment-box">
-        <textarea id="comment-input" placeholder="Why do you think so? (optional)" maxlength="80" oninput="document.getElementById('char-count').textContent=this.value.length"></textarea>
-        <div class="char-count"><span id="char-count">0</span>/80</div>
+      <div class="cmt-box" id="cmt-box">
+        <textarea id="cmt-in" placeholder="Why do you think so? (optional)" maxlength="80" oninput="document.getElementById('cc').textContent=this.value.length"></textarea>
+        <div class="cc"><span id="cc">0</span>/80</div>
       </div>
-      <button class="submit-btn" id="submit-btn" onclick="submitVote()">Submit Verdict →</button>
+      <button class="sub-btn" id="sub-btn" onclick="submitVote()">Submit Verdict →</button>
     </div>
   </div>
 
-  <!-- ── POST ── -->
+  <!-- POST -->
   <div class="screen" id="screen-post">
-    <div class="screen-padded">
-      <div class="post-header">
-        <h2>Ask the community</h2>
-        <p>Is your spending worth it?</p>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Category</label>
-        <div class="cat-grid">
-          <button class="cat-btn" onclick="selectPostCat(this,'Food & Drink')"><span class="cat-emoji">🍽️</span>Food</button>
-          <button class="cat-btn" onclick="selectPostCat(this,'Housing')"><span class="cat-emoji">🏠</span>Housing</button>
-          <button class="cat-btn" onclick="selectPostCat(this,'Fashion')"><span class="cat-emoji">👗</span>Fashion</button>
-          <button class="cat-btn" onclick="selectPostCat(this,'Travel')"><span class="cat-emoji">✈️</span>Travel</button>
-          <button class="cat-btn" onclick="selectPostCat(this,'Tech')"><span class="cat-emoji">💻</span>Tech</button>
-          <button class="cat-btn" onclick="selectPostCat(this,'Health')"><span class="cat-emoji">🏥</span>Health</button>
-          <button class="cat-btn" onclick="selectPostCat(this,'Education')"><span class="cat-emoji">📚</span>Education</button>
-          <button class="cat-btn" onclick="selectPostCat(this,'Other')"><span class="cat-emoji">💡</span>Other</button>
+    <div class="sp">
+      <div class="ph"><h2>Ask the community</h2><p>Is your spending worth it?</p></div>
+      <div class="fg">
+        <label class="fl">Category</label>
+        <div class="cg">
+          <button class="cb" onclick="spc(this,'Food & Drink')"><span class="ce">🍽️</span>Food</button>
+          <button class="cb" onclick="spc(this,'Housing')"><span class="ce">🏠</span>Housing</button>
+          <button class="cb" onclick="spc(this,'Fashion')"><span class="ce">👗</span>Fashion</button>
+          <button class="cb" onclick="spc(this,'Travel')"><span class="ce">✈️</span>Travel</button>
+          <button class="cb" onclick="spc(this,'Tech')"><span class="ce">💻</span>Tech</button>
+          <button class="cb" onclick="spc(this,'Health')"><span class="ce">🏥</span>Health</button>
+          <button class="cb" onclick="spc(this,'Education')"><span class="ce">📚</span>Education</button>
+          <button class="cb" onclick="spc(this,'Other')"><span class="ce">💡</span>Other</button>
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Amount</label>
-        <div class="amount-row">
-          <select class="currency-select" id="post-currency">
-            <option>USD</option><option>KRW</option><option>CNY</option>
-            <option>EUR</option><option>GBP</option><option>JPY</option>
-          </select>
-          <input class="amount-input" type="number" id="post-amount" placeholder="0" oninput="checkPostReady()" />
+      <div class="fg">
+        <label class="fl">Amount</label>
+        <div class="ar">
+          <select class="cs" id="post-cur"><option>USD</option><option>KRW</option><option>CNY</option><option>EUR</option><option>GBP</option><option>JPY</option></select>
+          <input class="ai" type="number" id="post-amt" placeholder="0" oninput="cpr()"/>
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Situation <span style="color:var(--ink-faint);font-weight:400;text-transform:none;letter-spacing:0">(max 120 chars)</span></label>
-        <textarea class="situation-input" id="post-situation" maxlength="120" placeholder="e.g. Omakase dinner for 2 in Gangnam — 9 courses included." oninput="checkPostReady()"></textarea>
+      <div class="fg">
+        <label class="fl">Situation <span style="color:var(--ink-faint);font-weight:400;text-transform:none;letter-spacing:0">(max 120 chars)</span></label>
+        <textarea class="si" id="post-sit" maxlength="120" placeholder="e.g. Omakase dinner for 2 in Gangnam — 9 courses included." oninput="cpr()"></textarea>
       </div>
-      <button class="post-btn" id="post-btn" onclick="submitQuestion()" disabled>Post Question</button>
+      <button class="pb" id="post-btn" onclick="submitQ()" disabled>Post Question</button>
     </div>
   </div>
 
-  <!-- ── RESULTS ── -->
+  <!-- RESULTS -->
   <div class="screen" id="screen-results">
-    <div class="screen-padded">
+    <div class="sp">
       <button class="back-btn" onclick="goScreen('feed')">
-        <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#6B6560" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Back
+        <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#6B6560" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Back
       </button>
-      <div id="results-question-card" style="margin-bottom:14px;"></div>
-      <div class="filter-tabs"><button class="filter-tab active">All</button></div>
-      <div class="result-card" id="results-bars">
-        <div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
+      <div id="res-qcard" style="margin-bottom:14px"></div>
+      <div class="ft"><button class="ftb active">All</button></div>
+      <div class="rc" id="res-bars">
+        <div class="loading"><div class="ld"></div><div class="ld"></div><div class="ld"></div></div>
       </div>
     </div>
   </div>
 
-  <!-- ── NAV ── -->
+  <!-- NAV -->
   <nav class="bottom-nav">
-    <div class="nav-item active" id="nav-feed" onclick="goScreen('feed')">
+    <div class="ni active" id="nav-feed" onclick="goScreen('feed')">
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="2" width="8" height="8" rx="2.5" fill="#1A1714"/><rect x="12" y="2" width="8" height="8" rx="2.5" fill="#1A1714"/><rect x="2" y="12" width="8" height="8" rx="2.5" fill="#1A1714"/><rect x="12" y="12" width="8" height="8" rx="2.5" stroke="#B8B3AC" stroke-width="1.5"/></svg>
       <span>Feed</span>
     </div>
-    <div class="nav-plus" onclick="goScreen('post')">
+    <div class="np" onclick="goScreen('post')">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3V17M3 10H17" stroke="#FAF8F4" stroke-width="2.2" stroke-linecap="round"/></svg>
     </div>
-    <div class="nav-item" id="nav-results" onclick="goScreen('results')">
+    <div class="ni" id="nav-results" onclick="goScreen('results')">
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M2 18L7 11L11 15L15 8L20 18H2Z" stroke="#B8B3AC" stroke-width="1.5" stroke-linejoin="round"/></svg>
       <span>Results</span>
     </div>
@@ -310,277 +300,275 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const { createClient } = supabase;
-  const sb = createClient(
-    'https://umrnupowquzziyifrygq.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVtcm51cG93cXV6eml5aWZyeWdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTY1ODMsImV4cCI6MjA5NTI3MjU4M30.lNeFBXvWBY30khaoXoyBjxTIs2PL3wY08YLP2X6uTXs'
-  );
+const {createClient}=supabase;
+const sb=createClient(
+  'https://umrnupowquzziyifrygq.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVtcm51cG93cXV6eml5aWZyeWdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTY1ODMsImV4cCI6MjA5NTI3MjU4M30.lNeFBXvWBY30khaoXoyBjxTIs2PL3wY08YLP2X6uTXs'
+);
 
-  const CAT_IMAGES = {
-    'Food & Drink': 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80',
-    'Housing':      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&q=80',
-    'Fashion':      'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80',
-    'Travel':       'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80',
-    'Tech':         'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80',
-    'Health':       'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80',
-    'Education':    'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600&q=80',
-    'Other':        'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80',
-  };
+const IMGS={
+  'Food & Drink':'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80',
+  'Housing':'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&q=80',
+  'Fashion':'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80',
+  'Travel':'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80',
+  'Tech':'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80',
+  'Health':'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80',
+  'Education':'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600&q=80',
+  'Other':'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80',
+};
 
-  let currentQ = null, selectedVote = null, postCategory = null, allQuestions = [];
-  let likes = JSON.parse(localStorage.getItem('wi_likes') || '{}');
+let curQ=null,selV=null,postCat=null,allQ=[];
+let likes=JSON.parse(localStorage.getItem('wi_l')||'{}');
 
-  function goScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-' + id).classList.add('active');
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    const nav = document.getElementById('nav-' + id);
-    if (nav) nav.classList.add('active');
-    window.scrollTo(0, 0);
-  }
+function goScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  const n=document.getElementById('nav-'+id);
+  if(n)n.classList.add('active');
+  window.scrollTo(0,0);
+}
 
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2500);
-  }
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
 
-  function timeLeft(expires) {
-    const diff = new Date(expires) - new Date();
-    if (diff < 0) return 'Closed';
-    const h = Math.floor(diff / 3600000);
-    return h < 24 ? `${h}h left` : `${Math.floor(h/24)}d left`;
-  }
+function tLeft(exp){
+  const d=new Date(exp)-new Date();
+  if(d<0)return'Closed';
+  const h=Math.floor(d/3600000);
+  return h<24?`${h}h left`:`${Math.floor(h/24)}d left`;
+}
 
-  function amtClass(amt) {
-    if (amt >= 100000) return 'amount-sm';
-    if (amt >= 10000)  return 'amount-md';
-    return 'amount-lg';
-  }
+function szClass(n){
+  const s=String(n).replace(/,/g,'');
+  if(s.length>=7)return'sz-sm';
+  if(s.length>=5)return'sz-md';
+  if(s.length>=4)return'sz-lg';
+  return'sz-xl';
+}
 
-  // Build masonry pairs
-  function renderFeed(questions) {
-    const list = document.getElementById('feed-list');
-    if (!questions.length) {
-      list.innerHTML = '<div class="loading">No questions yet. Be the first!</div>';
-      return;
-    }
+// Arrow SVG
+const ARR_W=`<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 8L8 2M8 2H3M8 2V7" stroke="rgba(255,255,255,0.75)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const ARR_D=`<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 8L8 2M8 2H3M8 2V7" stroke="#6B6560" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-    // Alternate: img/txt pattern in pairs
-    let html = '<div class="masonry">';
-    questions.forEach((q, i) => {
-      const img = CAT_IMAGES[q.category] || CAT_IMAGES['Other'];
-      const isImg = i % 2 === 0;
-      const size = i % 4 === 0 ? 'tall' : i % 4 === 2 ? 'tall' : 'mid';
-      const likedQ = likes[q.id];
-      const baseLikes = Math.floor((q.responses || 0) * 0.4 + i * 2);
-
-      if (isImg) {
-        // Image card
-        html += `
-        <div class="m-card img-card ${size}" onclick="openVote('${q.id}')" style="position:relative;">
-          <img src="${img}" alt="${q.category}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
-          <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,0.65) 100%);border-radius:20px;"></div>
-          <div class="card-inner">
-            <div class="card-top">
-              <span class="card-cat">${q.category}</span>
-              <div class="card-arrow">
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 8L8 2M8 2H3M8 2V7" stroke="rgba(255,255,255,0.8)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </div>
-            </div>
-            <div>
-              <div class="card-amount ${amtClass(q.amount)}">
-                <span class="card-currency">${q.currency}</span>${Number(q.amount).toLocaleString()}
-              </div>
-              <div class="card-footer" style="margin-top:6px;">
-                <div class="card-votes">
-                  <div class="vote-dot" style="background:rgba(255,255,255,0.5)"></div>
-                  <span>${q.responses || 0} votes</span>
-                </div>
-                <div class="card-like">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="${likedQ ? '#D64E3A' : 'none'}" stroke="${likedQ ? '#D64E3A' : 'rgba(255,255,255,0.6)'}" stroke-width="1.3"><path d="M6 10.5S1 7 1 3.5A2.5 2.5 0 0 1 6 2a2.5 2.5 0 0 1 5 1.5C11 7 6 10.5 6 10.5z"/></svg>
-                  <span style="color:rgba(255,255,255,0.6)">${baseLikes + (likedQ ? 1 : 0)}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>`;
-      } else {
-        // Text card
-        const desc = q.situation.length > 55 ? q.situation.slice(0, 55) + '…' : q.situation;
-        html += `
-        <div class="m-card txt-card ${size}" onclick="openVote('${q.id}')">
-          <div class="card-inner">
-            <div class="card-top">
-              <span class="card-cat">${q.category}</span>
-              <div class="card-arrow">
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 8L8 2M8 2H3M8 2V7" stroke="#6B6560" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </div>
-            </div>
-            <div>
-              <div class="card-amount ${amtClass(q.amount)}">
-                <span class="card-currency">${q.currency}</span>${Number(q.amount).toLocaleString()}
-              </div>
-              <p class="card-desc">${desc}</p>
-            </div>
-            <div class="card-footer">
-              <div class="card-votes">
-                <div class="vote-dot" style="background:var(--ink-faint)"></div>
-                <span>${q.responses || 0} votes</span>
-              </div>
-              <div class="card-like" style="color:var(--ink-faint)">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="${likedQ ? '#D64E3A' : 'none'}" stroke="${likedQ ? '#D64E3A' : 'var(--ink-faint)'}" stroke-width="1.3"><path d="M6 10.5S1 7 1 3.5A2.5 2.5 0 0 1 6 2a2.5 2.5 0 0 1 5 1.5C11 7 6 10.5 6 10.5z"/></svg>
-                ${baseLikes + (likedQ ? 1 : 0)}
-              </div>
-            </div>
-          </div>
-        </div>`;
-      }
-    });
-
-    html += '</div>';
-    list.innerHTML = html;
-  }
-
-  async function loadFeed() {
-    const { data, error } = await sb.from('questions').select('*').order('created_at', { ascending: false });
-    if (error) { document.getElementById('feed-list').innerHTML = '<div class="loading">Failed to load.</div>'; return; }
-    allQuestions = data || [];
-    renderFeed(allQuestions);
-  }
-
-  function filterCat(el, cat) {
-    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-    el.classList.add('active');
-    renderFeed(cat === 'All' ? allQuestions : allQuestions.filter(q => q.category === cat));
-  }
-
-  async function openVote(id) {
-    currentQ = allQuestions.find(q => q.id === id);
-    if (!currentQ) return;
-    document.getElementById('vote-img').src = CAT_IMAGES[currentQ.category] || CAT_IMAGES['Other'];
-    document.getElementById('vote-cat').textContent = currentQ.category;
-    document.getElementById('vote-currency').textContent = currentQ.currency + ' ';
-    document.getElementById('vote-amount').textContent = Number(currentQ.amount).toLocaleString();
-    document.getElementById('vote-desc').textContent = currentQ.situation;
-    selectedVote = null;
-    document.querySelectorAll('.vote-option').forEach(o => o.className = 'vote-option');
-    document.getElementById('submit-btn').style.display = 'none';
-    document.getElementById('comment-box').style.display = 'none';
-    document.getElementById('comment-input').value = '';
-    document.getElementById('char-count').textContent = '0';
-    goScreen('vote');
-  }
-
-  function selectVote(type) {
-    selectedVote = type;
-    document.querySelectorAll('.vote-option').forEach(o => o.className = 'vote-option');
-    document.getElementById('opt-' + type).className = 'vote-option sel-' + type;
-    document.getElementById('submit-btn').style.display = 'block';
-    document.getElementById('comment-box').style.display = 'block';
-  }
-
-  async function submitVote() {
-    if (!selectedVote || !currentQ) return;
-    const btn = document.getElementById('submit-btn');
-    btn.disabled = true; btn.textContent = 'Submitting...';
-    const comment = document.getElementById('comment-input').value.trim();
-    const { error } = await sb.from('votes').insert({ question_id: currentQ.id, verdict: selectedVote, comment: comment || null });
-    if (error) { showToast('Something went wrong!'); btn.disabled = false; btn.textContent = 'Submit Verdict →'; return; }
-    await sb.from('questions').update({ responses: (currentQ.responses || 0) + 1 }).eq('id', currentQ.id);
-    currentQ.responses = (currentQ.responses || 0) + 1;
-    showToast('Verdict submitted! 🎉');
-    await loadResults(currentQ.id);
-    goScreen('results');
-    btn.disabled = false; btn.textContent = 'Submit Verdict →';
-    loadFeed();
-  }
-
-  async function loadResults(id) {
-    const q = allQuestions.find(q => q.id === id) || currentQ;
-    if (!q) return;
-    const img = CAT_IMAGES[q.category] || CAT_IMAGES['Other'];
-    document.getElementById('results-question-card').innerHTML = `
-      <div style="position:relative;height:150px;border-radius:20px;overflow:hidden;margin-bottom:14px;">
-        <img src="${img}" style="width:100%;height:100%;object-fit:cover;" />
-        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.08),rgba(0,0,0,0.6));"></div>
-        <span style="position:absolute;top:12px;left:12px;padding:5px 12px;background:rgba(255,255,255,0.9);border-radius:30px;font-size:10px;font-weight:700;color:var(--ink);letter-spacing:0.06em;text-transform:uppercase;">${q.category}</span>
-        <div style="position:absolute;bottom:14px;left:16px;">
-          <span style="font-family:var(--font-body);font-size:12px;color:rgba(255,255,255,0.8);vertical-align:super;margin-right:2px;">${q.currency}</span>
-          <span style="font-family:var(--font-display);font-size:30px;font-weight:700;color:#fff;letter-spacing:-0.02em;">${Number(q.amount).toLocaleString()}</span>
+function imgCard(q,extraClass=''){
+  const img=IMGS[q.category]||IMGS['Other'];
+  const liked=likes[q.id];
+  const bl=Math.floor((q.responses||0)*.4+2);
+  return`<div class="m-card img-card ${extraClass}" onclick="openVote('${q.id}')" style="position:relative;">
+    <img src="${img}" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"/>
+    <div class="img-overlay"></div>
+    <div class="img-content">
+      <div class="card-top">
+        <span class="card-cat-label">${q.category}</span>
+        <div class="card-arrow">${ARR_W}</div>
+      </div>
+      <div>
+        <div class="card-amount ${szClass(q.amount)}"><span class="amt-cur">${q.currency}</span>${Number(q.amount).toLocaleString()}</div>
+        <div class="card-foot">
+          <div class="vote-info"><div class="vdot" style="background:rgba(255,255,255,.45)"></div><span>${q.responses||0} votes</span></div>
+          <div class="like-info"><svg width="11" height="11" viewBox="0 0 12 12" fill="${liked?'#D64E3A':'none'}" stroke="${liked?'#D64E3A':'rgba(255,255,255,0.55)'}" stroke-width="1.3"><path d="M6 10.5S1 7 1 3.5A2.5 2.5 0 0 1 6 2a2.5 2.5 0 0 1 5 1.5C11 7 6 10.5 6 10.5z"/></svg>${bl+(liked?1:0)}</div>
         </div>
       </div>
-      <p style="font-size:14px;color:var(--ink-light);line-height:1.5;margin-bottom:8px;">${q.situation}</p>
-      <div style="display:flex;gap:8px;margin-bottom:14px;">
-        <span style="font-size:11px;color:var(--ink-faint);font-weight:500;">${q.responses||0} responses</span>
-        <span style="color:var(--ink-faint)">·</span>
-        <span style="font-size:11px;color:var(--ink-faint);font-weight:500;">${timeLeft(q.expires_at)}</span>
-      </div>`;
+    </div>
+  </div>`;
+}
 
-    const { data: votes } = await sb.from('votes').select('verdict').eq('question_id', id);
-    const total = votes?.length || 0;
-    const exp  = votes?.filter(v => v.verdict === 'expensive').length || 0;
-    const fair = votes?.filter(v => v.verdict === 'fair').length || 0;
-    const deal = votes?.filter(v => v.verdict === 'deal').length || 0;
-    const pct  = n => total ? Math.round(n / total * 100) : 0;
-    const ePct = pct(exp), fPct = pct(fair), dPct = pct(deal);
-    const topVerdict = ePct >= fPct && ePct >= dPct ? '💸 Most people say it\'s too expensive'
-      : fPct >= dPct ? '✅ Most people think it\'s fair' : '🤑 Most people think it\'s a great deal';
-    const topColor = ePct >= fPct && ePct >= dPct ? 'var(--expensive)' : fPct >= dPct ? 'var(--fair)' : 'var(--deal)';
-    const topBg   = ePct >= fPct && ePct >= dPct ? 'rgba(214,78,58,0.08)' : fPct >= dPct ? 'rgba(74,124,89,0.08)' : 'rgba(46,106,168,0.08)';
+function txtCard(q,extraClass=''){
+  const liked=likes[q.id];
+  const bl=Math.floor((q.responses||0)*.4+2);
+  const desc=q.situation.length>60?q.situation.slice(0,60)+'…':q.situation;
+  return`<div class="m-card txt-card ${extraClass}" onclick="openVote('${q.id}')">
+    <div class="card-top">
+      <span class="card-cat-label">${q.category}</span>
+      <div class="card-arrow">${ARR_D}</div>
+    </div>
+    <div>
+      <div class="card-amount ${szClass(q.amount)}"><span class="amt-cur">${q.currency}</span>${Number(q.amount).toLocaleString()}</div>
+      <p class="card-desc-txt">${desc}</p>
+    </div>
+    <div class="card-foot">
+      <div class="vote-info"><div class="vdot" style="background:var(--ink-faint)"></div><span>${q.responses||0} votes</span></div>
+      <div class="like-info" style="color:var(--ink-faint)"><svg width="11" height="11" viewBox="0 0 12 12" fill="${liked?'#D64E3A':'none'}" stroke="${liked?'#D64E3A':'var(--ink-faint)'}" stroke-width="1.3"><path d="M6 10.5S1 7 1 3.5A2.5 2.5 0 0 1 6 2a2.5 2.5 0 0 1 5 1.5C11 7 6 10.5 6 10.5z"/></svg>${bl+(liked?1:0)}</div>
+    </div>
+  </div>`;
+}
 
-    document.getElementById('results-bars').innerHTML = total === 0
-      ? '<div class="loading">No votes yet. Be the first!</div>'
-      : `<div class="result-bar">
-          <div class="result-bar-header"><span class="result-bar-label">💸 Too Expensive</span><span class="result-pct" style="color:var(--expensive)">${ePct}%</span></div>
-          <div class="bar-track"><div class="bar-fill" style="width:${ePct}%;background:var(--expensive)"></div></div>
-        </div>
-        <div class="result-bar">
-          <div class="result-bar-header"><span class="result-bar-label">✅ Fair Price</span><span class="result-pct" style="color:var(--fair)">${fPct}%</span></div>
-          <div class="bar-track"><div class="bar-fill" style="width:${fPct}%;background:var(--fair)"></div></div>
-        </div>
-        <div class="result-bar">
-          <div class="result-bar-header"><span class="result-bar-label">🤑 Great Deal</span><span class="result-pct" style="color:var(--deal)">${dPct}%</span></div>
-          <div class="bar-track"><div class="bar-fill" style="width:${dPct}%;background:var(--deal)"></div></div>
-        </div>
-        <div class="verdict-box" style="background:${topBg};border:1px solid ${topColor}33;color:${topColor}">${topVerdict}</div>
-        <div style="margin-top:12px;font-size:11px;color:var(--ink-faint);text-align:center;">${total} total vote${total!==1?'s':''}</div>`;
+function renderFeed(questions){
+  const list=document.getElementById('feed-list');
+  if(!questions.length){list.innerHTML='<div class="loading">No questions yet. Be the first!</div>';return;}
+
+  // Build blocks of 3 cards using the editorial pattern:
+  // Block: [img-tall(spans 2 rows)] + [txt-sm] + [txt-lg] + [txt-bot] + [img-bot]
+  // Each block needs 4+ cards. Last block may be partial.
+  let html='<div class="edit-grid">';
+  let i=0;
+  while(i<questions.length){
+    const q0=questions[i];
+    const q1=questions[i+1];
+    const q2=questions[i+2];
+    const q3=questions[i+3];
+    const q4=questions[i+4];
+
+    html+='<div class="edit-block">';
+
+    // Left col tall image (row 1-2)
+    html+=`<div class="cell-img-tall">${imgCard(q0)}</div>`;
+
+    // Right col top: small text
+    if(q1) html+=`<div class="cell-txt-sm">${txtCard(q1)}</div>`;
+
+    // Right col: large text
+    if(q2) html+=`<div class="cell-txt-lg">${txtCard(q2)}</div>`;
+
+    // Row 3 left: white text card
+    if(q3) html+=`<div class="cell-txt-bot">${txtCard(q3)}</div>`;
+
+    // Row 3 right: image card
+    if(q4) html+=`<div class="cell-img-bot m-card img-card" onclick="openVote('${q4.id}')" style="position:relative;border-radius:20px;overflow:hidden;cursor:pointer;">
+      <img src="${IMGS[q4.category]||IMGS['Other']}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;"/>
+      <div class="img-overlay"></div>
+      <div class="img-content">
+        <div class="card-top"><span class="card-cat-label">${q4.category}</span><div class="card-arrow">${ARR_W}</div></div>
+        <div class="card-amount sz-md"><span class="amt-cur">${q4.currency}</span>${Number(q4.amount).toLocaleString()}</div>
+      </div>
+    </div>`;
+
+    html+='</div>';
+    i+=5;
   }
 
-  function selectPostCat(el, cat) {
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
-    postCategory = cat;
-    checkPostReady();
-  }
+  html+='</div>';
+  list.innerHTML=html;
+}
 
-  function checkPostReady() {
-    const amt = document.getElementById('post-amount').value;
-    const sit = document.getElementById('post-situation').value.trim();
-    document.getElementById('post-btn').disabled = !(postCategory && amt && sit);
-  }
+async function loadFeed(){
+  const {data,error}=await sb.from('questions').select('*').order('created_at',{ascending:false});
+  if(error){document.getElementById('feed-list').innerHTML='<div class="loading">Failed to load.</div>';return;}
+  allQ=data||[];
+  renderFeed(allQ);
+}
 
-  async function submitQuestion() {
-    const btn = document.getElementById('post-btn');
-    btn.disabled = true; btn.textContent = 'Posting...';
-    const { data, error } = await sb.from('questions').insert({
-      category: postCategory,
-      currency: document.getElementById('post-currency').value,
-      amount: parseInt(document.getElementById('post-amount').value),
-      situation: document.getElementById('post-situation').value.trim(),
-    }).select().single();
-    if (error) { showToast('Failed to post!'); btn.disabled = false; btn.textContent = 'Post Question'; return; }
-    showToast('Question posted! 🎉');
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('post-amount').value = '';
-    document.getElementById('post-situation').value = '';
-    postCategory = null; btn.textContent = 'Post Question';
-    await loadFeed();
-    goScreen('feed');
-  }
+function filterCat(el,cat){
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  renderFeed(cat==='All'?allQ:allQ.filter(q=>q.category===cat));
+}
 
+async function openVote(id){
+  curQ=allQ.find(q=>q.id===id);
+  if(!curQ)return;
+  document.getElementById('vote-img').src=IMGS[curQ.category]||IMGS['Other'];
+  document.getElementById('vote-cat').textContent=curQ.category;
+  document.getElementById('vote-cur').textContent=curQ.currency+' ';
+  document.getElementById('vote-num').textContent=Number(curQ.amount).toLocaleString();
+  document.getElementById('vote-desc').textContent=curQ.situation;
+  selV=null;
+  document.querySelectorAll('.v-opt').forEach(o=>o.className='v-opt');
+  document.getElementById('sub-btn').style.display='none';
+  document.getElementById('cmt-box').style.display='none';
+  document.getElementById('cmt-in').value='';
+  document.getElementById('cc').textContent='0';
+  goScreen('vote');
+}
+
+function sv(type){
+  selV=type;
+  document.querySelectorAll('.v-opt').forEach(o=>o.className='v-opt');
+  document.getElementById('opt-'+type).className='v-opt s'+type[0];
+  document.getElementById('sub-btn').style.display='block';
+  document.getElementById('cmt-box').style.display='block';
+}
+
+async function submitVote(){
+  if(!selV||!curQ)return;
+  const btn=document.getElementById('sub-btn');
+  btn.disabled=true;btn.textContent='Submitting...';
+  const cmt=document.getElementById('cmt-in').value.trim();
+  const {error}=await sb.from('votes').insert({question_id:curQ.id,verdict:selV,comment:cmt||null});
+  if(error){toast('Something went wrong!');btn.disabled=false;btn.textContent='Submit Verdict →';return;}
+  await sb.from('questions').update({responses:(curQ.responses||0)+1}).eq('id',curQ.id);
+  curQ.responses=(curQ.responses||0)+1;
+  toast('Verdict submitted! 🎉');
+  await loadRes(curQ.id);
+  goScreen('results');
+  btn.disabled=false;btn.textContent='Submit Verdict →';
   loadFeed();
+}
+
+async function loadRes(id){
+  const q=allQ.find(q=>q.id===id)||curQ;
+  if(!q)return;
+  const img=IMGS[q.category]||IMGS['Other'];
+  document.getElementById('res-qcard').innerHTML=`
+    <div style="position:relative;height:150px;border-radius:20px;overflow:hidden;margin-bottom:14px;">
+      <img src="${img}" style="width:100%;height:100%;object-fit:cover;"/>
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.08),rgba(0,0,0,.6));"></div>
+      <span style="position:absolute;top:12px;left:12px;padding:5px 12px;background:rgba(255,255,255,.9);border-radius:30px;font-size:10px;font-weight:700;color:var(--ink);letter-spacing:.06em;text-transform:uppercase;">${q.category}</span>
+      <div style="position:absolute;bottom:14px;left:16px;">
+        <span style="font-family:var(--fb);font-size:12px;color:rgba(255,255,255,.8);vertical-align:super;margin-right:2px;">${q.currency}</span>
+        <span style="font-family:var(--fd);font-size:30px;font-weight:700;color:#fff;letter-spacing:-.02em;">${Number(q.amount).toLocaleString()}</span>
+      </div>
+    </div>
+    <p style="font-size:14px;color:var(--ink-light);line-height:1.5;margin-bottom:8px;">${q.situation}</p>
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <span style="font-size:11px;color:var(--ink-faint);font-weight:500;">${q.responses||0} responses</span>
+      <span style="color:var(--ink-faint)">·</span>
+      <span style="font-size:11px;color:var(--ink-faint);font-weight:500;">${tLeft(q.expires_at)}</span>
+    </div>`;
+
+  const {data:votes}=await sb.from('votes').select('verdict').eq('question_id',id);
+  const tot=votes?.length||0;
+  const exp=votes?.filter(v=>v.verdict==='expensive').length||0;
+  const fai=votes?.filter(v=>v.verdict==='fair').length||0;
+  const del=votes?.filter(v=>v.verdict==='deal').length||0;
+  const pct=n=>tot?Math.round(n/tot*100):0;
+  const eP=pct(exp),fP=pct(fai),dP=pct(del);
+  const tv=eP>=fP&&eP>=dP?'💸 Most people say it\'s too expensive':fP>=dP?'✅ Most people think it\'s fair':'🤑 Most people think it\'s a great deal';
+  const tc=eP>=fP&&eP>=dP?'var(--expensive)':fP>=dP?'var(--fair)':'var(--deal)';
+  const tb=eP>=fP&&eP>=dP?'rgba(214,78,58,.08)':fP>=dP?'rgba(74,124,89,.08)':'rgba(46,106,168,.08)';
+  document.getElementById('res-bars').innerHTML=tot===0?'<div class="loading">No votes yet. Be the first!</div>':`
+    <div class="rb"><div class="rbh"><span class="rbl">💸 Too Expensive</span><span class="rp" style="color:var(--expensive)">${eP}%</span></div><div class="bt"><div class="bf" style="width:${eP}%;background:var(--expensive)"></div></div></div>
+    <div class="rb"><div class="rbh"><span class="rbl">✅ Fair Price</span><span class="rp" style="color:var(--fair)">${fP}%</span></div><div class="bt"><div class="bf" style="width:${fP}%;background:var(--fair)"></div></div></div>
+    <div class="rb"><div class="rbh"><span class="rbl">🤑 Great Deal</span><span class="rp" style="color:var(--deal)">${dP}%</span></div><div class="bt"><div class="bf" style="width:${dP}%;background:var(--deal)"></div></div></div>
+    <div class="vb" style="background:${tb};border:1px solid ${tc}33;color:${tc}">${tv}</div>
+    <div style="margin-top:12px;font-size:11px;color:var(--ink-faint);text-align:center;">${tot} total vote${tot!==1?'s':''}</div>`;
+}
+
+function spc(el,cat){
+  document.querySelectorAll('.cb').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');postCat=cat;cpr();
+}
+
+function cpr(){
+  const a=document.getElementById('post-amt').value;
+  const s=document.getElementById('post-sit').value.trim();
+  document.getElementById('post-btn').disabled=!(postCat&&a&&s);
+}
+
+async function submitQ(){
+  const btn=document.getElementById('post-btn');
+  btn.disabled=true;btn.textContent='Posting...';
+  const {data,error}=await sb.from('questions').insert({
+    category:postCat,
+    currency:document.getElementById('post-cur').value,
+    amount:parseInt(document.getElementById('post-amt').value),
+    situation:document.getElementById('post-sit').value.trim(),
+  }).select().single();
+  if(error){toast('Failed to post!');btn.disabled=false;btn.textContent='Post Question';return;}
+  toast('Question posted! 🎉');
+  document.querySelectorAll('.cb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('post-amt').value='';
+  document.getElementById('post-sit').value='';
+  postCat=null;btn.textContent='Post Question';
+  await loadFeed();
+  goScreen('feed');
+}
+
+loadFeed();
 </script>
 </body>
 </html>
