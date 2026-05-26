@@ -8,6 +8,7 @@
   <link rel="manifest" href="manifest.json" />
   <title>Worth It?</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -21,61 +22,68 @@
     }
     body { background: var(--bg); font-family: var(--font-body); color: var(--ink); min-height: 100vh; }
     ::-webkit-scrollbar { display: none; }
-
-    /* Layout */
-    .app { max-width: 430px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; position: relative; }
-    .screen { flex: 1; overflow-y: auto; padding: 0 16px 80px; display: none; }
+    .app { max-width: 430px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+    .screen { flex: 1; overflow-y: auto; padding: 0 16px 90px; display: none; }
     .screen.active { display: block; }
-
-    /* Bottom Nav */
     .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: var(--bg-card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: flex-end; padding: 8px 16px 28px; z-index: 100; }
     .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; min-width: 60px; }
     .nav-item span { font-size: 10px; font-weight: 600; color: var(--ink-faint); letter-spacing: 0.04em; }
     .nav-item.active span { color: var(--ink); }
     .nav-plus { width: 42px; height: 42px; background: var(--ink); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: -20px; box-shadow: 0 4px 16px rgba(26,23,20,0.15); cursor: pointer; }
-
-    /* Header */
     .header { padding: 20px 0 16px; display: flex; justify-content: space-between; align-items: flex-end; }
     .header h1 { font-family: var(--font-display); font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
     .header p { font-size: 12px; color: var(--ink-light); margin-top: 3px; }
-
-    /* Category Pills */
     .cat-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 20px; }
-    .cat-pill { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; background: var(--bg-muted); color: var(--ink-light); border: none; }
+    .cat-pill { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; background: var(--bg-muted); color: var(--ink-light); border: none; font-family: var(--font-body); }
     .cat-pill.active { background: var(--ink); color: var(--bg); }
-
-    /* Cards */
     .card { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); padding: 16px; margin-bottom: 12px; cursor: pointer; transition: transform 0.1s; }
     .card:active { transform: scale(0.98); }
     .card.featured { padding: 20px; box-shadow: 0 4px 24px rgba(26,23,20,0.06); position: relative; overflow: hidden; }
     .card.featured::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent-dark), var(--accent)); }
     .card-tag { display: inline-block; padding: 3px 10px; background: var(--bg-muted); border-radius: 20px; font-size: 10px; font-weight: 600; color: var(--ink-light); letter-spacing: 0.06em; text-transform: uppercase; }
-    .card-label { font-size: 9px; font-weight: 700; color: var(--accent-dark); letter-spacing: 0.08em; text-transform: uppercase; }
     .card-amount { font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--ink); margin: 10px 0 5px; letter-spacing: -0.02em; }
-    .card-amount .currency { font-family: var(--font-body); font-size: 12px; font-weight: 500; color: var(--ink-light); vertical-align: super; margin-right: 2px; }
+    .currency { font-family: var(--font-body); font-size: 12px; font-weight: 500; color: var(--ink-light); vertical-align: super; margin-right: 2px; }
     .card-desc { font-size: 13px; color: var(--ink-light); line-height: 1.5; margin-bottom: 12px; }
-    .card-meta { display: flex; gap: 8px; align-items: center; }
+    .card-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .card-meta span { font-size: 11px; color: var(--ink-faint); font-weight: 500; }
-    .verdict-bars { display: flex; gap: 3px; align-items: center; margin-left: auto; }
-    .vbar { height: 4px; border-radius: 2px; opacity: 0.7; }
-
-    /* Vote Screen */
-    .back-btn { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-muted); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 16px 0 8px; }
+    .loading { text-align: center; padding: 40px 20px; color: var(--ink-faint); font-size: 14px; }
+    .loading-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin: 0 3px; animation: bounce 1.2s infinite; }
+    .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
+    .back-btn { background: var(--bg-muted); border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 20px; margin: 16px 0 12px; font-family: var(--font-body); font-size: 13px; color: var(--ink-light); font-weight: 500; }
     .vote-card { background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border); padding: 24px 20px; margin-bottom: 20px; position: relative; overflow: hidden; }
     .vote-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent-dark), var(--accent)); }
     .vote-amount { font-family: var(--font-display); font-size: 44px; font-weight: 700; color: var(--ink); margin: 10px 0 4px; letter-spacing: -0.03em; }
     .vote-label { font-size: 12px; font-weight: 700; color: var(--ink-light); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; }
     .vote-option { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 14px; border: 1.5px solid var(--border); background: var(--bg-card); margin-bottom: 10px; cursor: pointer; transition: all 0.15s; }
-    .vote-option.selected-expensive { border-color: var(--expensive); background: rgba(214,78,58,0.05); }
-    .vote-option.selected-fair { border-color: var(--fair); background: rgba(74,124,89,0.05); }
-    .vote-option.selected-deal { border-color: var(--deal); background: rgba(46,106,168,0.05); }
+    .vote-option.sel-expensive { border-color: var(--expensive); background: rgba(214,78,58,0.05); }
+    .vote-option.sel-fair { border-color: var(--fair); background: rgba(74,124,89,0.05); }
+    .vote-option.sel-deal { border-color: var(--deal); background: rgba(46,106,168,0.05); }
     .vote-icon { width: 38px; height: 38px; border-radius: 50%; background: var(--bg-muted); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
     .vote-text h3 { font-size: 14px; font-weight: 600; color: var(--ink); }
     .vote-text p { font-size: 12px; color: var(--ink-faint); margin-top: 2px; }
+    .comment-box { border: 1.5px solid var(--border); border-radius: 12px; background: var(--bg-card); padding: 12px 14px; margin-top: 16px; display: none; }
+    .comment-box textarea { width: 100%; border: none; outline: none; resize: none; font-family: var(--font-body); font-size: 13px; color: var(--ink); background: transparent; line-height: 1.5; height: 56px; }
+    .comment-box .char-count { text-align: right; font-size: 10px; color: var(--ink-faint); }
     .submit-btn { width: 100%; padding: 16px; background: var(--ink); color: var(--bg); border: none; border-radius: 14px; font-family: var(--font-body); font-size: 14px; font-weight: 600; cursor: pointer; letter-spacing: 0.02em; margin-top: 16px; display: none; }
-
-    /* Results Screen */
-    .result-summary { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); padding: 18px 16px; margin-bottom: 14px; }
+    .post-header { padding: 20px 0 16px; }
+    .post-header h2 { font-family: var(--font-display); font-size: 24px; font-weight: 700; }
+    .form-label { font-size: 11px; font-weight: 700; color: var(--ink-light); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; display: block; }
+    .form-group { margin-bottom: 20px; }
+    .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .cat-btn { padding: 10px 4px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--bg-card); font-family: var(--font-body); font-size: 10px; font-weight: 600; color: var(--ink-light); cursor: pointer; text-align: center; }
+    .cat-btn.active { border-color: var(--ink); background: var(--ink); color: var(--bg); }
+    .cat-btn .cat-emoji { font-size: 18px; display: block; margin-bottom: 4px; }
+    .amount-row { display: flex; gap: 8px; }
+    .currency-select { width: 80px; padding: 12px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--bg-card); font-family: var(--font-body); font-size: 14px; color: var(--ink); outline: none; }
+    .amount-input { flex: 1; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--bg-card); font-family: var(--font-display); font-size: 20px; color: var(--ink); outline: none; }
+    .amount-input:focus, .currency-select:focus { border-color: var(--ink); }
+    .situation-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--bg-card); font-family: var(--font-body); font-size: 14px; color: var(--ink); outline: none; resize: none; height: 80px; line-height: 1.5; }
+    .situation-input:focus { border-color: var(--ink); }
+    .post-btn { width: 100%; padding: 16px; background: var(--ink); color: var(--bg); border: none; border-radius: 14px; font-family: var(--font-body); font-size: 14px; font-weight: 600; cursor: pointer; }
+    .post-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .result-card { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); padding: 18px 16px; margin-bottom: 14px; }
     .section-title { font-size: 11px; font-weight: 700; color: var(--ink); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 14px; }
     .result-bar { margin-bottom: 14px; }
     .result-bar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
@@ -84,110 +92,43 @@
     .bar-track { height: 7px; background: var(--bg-muted); border-radius: 4px; overflow: hidden; }
     .bar-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
     .verdict-box { padding: 10px 12px; border-radius: 10px; margin-top: 14px; font-size: 12px; font-weight: 600; }
-    .demo-section { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); padding: 16px; margin-bottom: 14px; }
-    .demo-row { margin-bottom: 14px; }
-    .demo-row-label { font-size: 11px; font-weight: 600; color: var(--ink-faint); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px; }
-    .demo-split { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-    .demo-split-label { font-size: 12px; color: var(--ink-light); width: 52px; flex-shrink: 0; }
-    .demo-split-track { flex: 1; height: 5px; background: var(--bg-muted); border-radius: 3px; overflow: hidden; display: flex; }
-    .comment-section { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); padding: 16px; margin-bottom: 14px; }
-    .comment { padding: 10px 0; border-bottom: 1px solid var(--border); }
-    .comment:last-child { border-bottom: none; }
-    .comment-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
-    .comment-user { font-size: 11px; font-weight: 600; color: var(--ink-light); }
-    .comment-text { font-size: 12px; color: var(--ink); line-height: 1.5; }
-
-    /* Filter tabs */
     .filter-tabs { display: flex; gap: 6px; margin-bottom: 16px; }
-    .filter-tab { flex: 1; text-align: center; padding: 7px 0; border-radius: 10px; background: var(--bg-muted); color: var(--ink-light); font-size: 11px; font-weight: 600; cursor: pointer; border: none; }
+    .filter-tab { flex: 1; text-align: center; padding: 7px 0; border-radius: 10px; background: var(--bg-muted); color: var(--ink-light); font-size: 11px; font-weight: 600; cursor: pointer; border: none; font-family: var(--font-body); }
     .filter-tab.active { background: var(--ink); color: var(--bg); }
-
-    /* PWA install banner */
-    .install-banner { display: none; position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 398px; background: var(--ink); color: var(--bg); border-radius: 14px; padding: 14px 16px; z-index: 200; }
-    .install-banner.show { display: flex; align-items: center; gap: 12px; }
-    .install-banner p { flex: 1; font-size: 13px; line-height: 1.4; }
-    .install-banner button { background: var(--accent); color: var(--ink); border: none; border-radius: 8px; padding: 8px 14px; font-family: var(--font-body); font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
-    .close-banner { background: none; border: none; color: var(--ink-faint); cursor: pointer; font-size: 18px; padding: 0 4px; }
+    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; font-family: var(--font-body); z-index: 300; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
+    .toast.show { opacity: 1; }
   </style>
 </head>
 <body>
 <div class="app">
-
-  <!-- ── FEED SCREEN ── -->
   <div class="screen active" id="screen-feed">
     <div class="header">
-      <div>
-        <h1>Worth It?</h1>
-        <p>Your spending. Their verdict.</p>
-      </div>
-      <div style="width:34px;height:34px;border-radius:50%;background:var(--bg-muted);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="3" stroke="#6B6560" stroke-width="1.5"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#6B6560" stroke-width="1.5" stroke-linecap="round"/></svg>
-      </div>
+      <div><h1>Worth It?</h1><p>Your spending. Their verdict.</p></div>
     </div>
-
     <div class="cat-scroll">
       <button class="cat-pill active" onclick="filterCat(this,'All')">All</button>
-      <button class="cat-pill" onclick="filterCat(this,'Food')">Food & Drink</button>
+      <button class="cat-pill" onclick="filterCat(this,'Food & Drink')">Food & Drink</button>
       <button class="cat-pill" onclick="filterCat(this,'Housing')">Housing</button>
       <button class="cat-pill" onclick="filterCat(this,'Fashion')">Fashion</button>
       <button class="cat-pill" onclick="filterCat(this,'Travel')">Travel</button>
       <button class="cat-pill" onclick="filterCat(this,'Tech')">Tech</button>
     </div>
-
     <div id="feed-list">
-      <div class="card featured" onclick="goVote()">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-          <span class="card-tag">Food & Drink</span>
-          <span class="card-label">Today's Pick</span>
-        </div>
-        <div class="card-amount"><span class="currency">KRW</span>180,000</div>
-        <p class="card-desc">Omakase dinner for 2 in Gangnam — 9 courses, sake pairing included.</p>
-        <div class="card-meta">
-          <span>142 responses</span><span>·</span><span>18h left</span>
-          <div class="verdict-bars">
-            <div class="vbar" style="width:26px;background:var(--expensive)"></div>
-            <div class="vbar" style="width:10px;background:var(--fair)"></div>
-            <div class="vbar" style="width:4px;background:var(--deal)"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card" onclick="goVote()">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><span class="card-tag">Housing</span></div>
-        <div class="card-amount"><span class="currency">USD</span>2,800</div>
-        <p class="card-desc">Studio apartment in Brooklyn, 400sqft, 10 min to subway.</p>
-        <div class="card-meta"><span>89 responses</span><span>·</span><span>52h left</span></div>
-      </div>
-
-      <div class="card" onclick="goVote()">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><span class="card-tag">Tech</span></div>
-        <div class="card-amount"><span class="currency">USD</span>349</div>
-        <p class="card-desc">AirPods Pro 2nd gen — full Apple Store price, no discount.</p>
-        <div class="card-meta"><span>214 responses</span><span>·</span><span>6h left</span></div>
-      </div>
-
-      <div class="card" onclick="goVote()">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><span class="card-tag">Food & Drink</span></div>
-        <div class="card-amount"><span class="currency">KRW</span>38,000</div>
-        <p class="card-desc">Weekday lunch buffet at a hotel — coffee and dessert included.</p>
-        <div class="card-meta"><span>57 responses</span><span>·</span><span>91h left</span></div>
-      </div>
+      <div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
     </div>
   </div>
 
-  <!-- ── VOTE SCREEN ── -->
   <div class="screen" id="screen-vote">
     <button class="back-btn" onclick="goScreen('feed')">
-      <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#1A1714" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#6B6560" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Feed
     </button>
-
     <div class="vote-card">
-      <span class="card-tag">Food & Drink</span>
-      <div class="vote-amount"><span class="currency" style="font-family:var(--font-body);font-size:16px;font-weight:500;color:var(--ink-light);vertical-align:super;margin-right:2px;">KRW</span>180,000</div>
-      <p class="card-desc">Omakase dinner for 2 in Gangnam — 9 courses, sake pairing included.</p>
-      <div class="card-meta"><span>142 votes</span><span>·</span><span>18h left</span></div>
+      <span class="card-tag" id="vote-cat">—</span>
+      <div class="vote-amount"><span class="currency" id="vote-currency"></span><span id="vote-amount">—</span></div>
+      <p class="card-desc" id="vote-desc">—</p>
+      <div class="card-meta"><span id="vote-count">— responses</span></div>
     </div>
-
     <p class="vote-label">Your verdict</p>
     <div class="vote-option" id="opt-expensive" onclick="selectVote('expensive')">
       <div class="vote-icon">💸</div>
@@ -201,90 +142,66 @@
       <div class="vote-icon">🤑</div>
       <div class="vote-text"><h3>Great Deal</h3><p>I'd pay that in a heartbeat</p></div>
     </div>
-    <button class="submit-btn" id="submit-btn" onclick="goResults()">Submit Verdict →</button>
+    <div class="comment-box" id="comment-box">
+      <textarea id="comment-input" placeholder="Why do you think so? (optional)" maxlength="80" oninput="updateCharCount()"></textarea>
+      <div class="char-count"><span id="char-count">0</span>/80</div>
+    </div>
+    <button class="submit-btn" id="submit-btn" onclick="submitVote()">Submit Verdict →</button>
   </div>
 
-  <!-- ── RESULTS SCREEN ── -->
+  <div class="screen" id="screen-post">
+    <div class="post-header">
+      <h2>Ask the community</h2>
+      <p style="font-size:13px;color:var(--ink-light);margin-top:4px;">Is your spending worth it?</p>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <div class="cat-grid">
+        <button class="cat-btn" onclick="selectPostCat(this,'Food & Drink')"><span class="cat-emoji">🍽️</span>Food</button>
+        <button class="cat-btn" onclick="selectPostCat(this,'Housing')"><span class="cat-emoji">🏠</span>Housing</button>
+        <button class="cat-btn" onclick="selectPostCat(this,'Fashion')"><span class="cat-emoji">👗</span>Fashion</button>
+        <button class="cat-btn" onclick="selectPostCat(this,'Travel')"><span class="cat-emoji">✈️</span>Travel</button>
+        <button class="cat-btn" onclick="selectPostCat(this,'Tech')"><span class="cat-emoji">💻</span>Tech</button>
+        <button class="cat-btn" onclick="selectPostCat(this,'Health')"><span class="cat-emoji">🏥</span>Health</button>
+        <button class="cat-btn" onclick="selectPostCat(this,'Education')"><span class="cat-emoji">📚</span>Education</button>
+        <button class="cat-btn" onclick="selectPostCat(this,'Other')"><span class="cat-emoji">💡</span>Other</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Amount</label>
+      <div class="amount-row">
+        <select class="currency-select" id="post-currency">
+          <option>USD</option><option>KRW</option><option>CNY</option>
+          <option>EUR</option><option>GBP</option><option>JPY</option>
+        </select>
+        <input class="amount-input" type="number" id="post-amount" placeholder="0" oninput="checkPostReady()" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Situation <span style="color:var(--ink-faint);font-weight:400;text-transform:none;letter-spacing:0">(max 120 chars)</span></label>
+      <textarea class="situation-input" id="post-situation" maxlength="120" placeholder="e.g. Omakase dinner for 2 in Gangnam — 9 courses included." oninput="checkPostReady()"></textarea>
+    </div>
+    <button class="post-btn" id="post-btn" onclick="submitQuestion()" disabled>Post Question</button>
+  </div>
+
   <div class="screen" id="screen-results">
     <button class="back-btn" onclick="goScreen('feed')">
-      <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#1A1714" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="#6B6560" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Feed
     </button>
-
-    <div class="card" style="margin-bottom:14px;">
-      <span class="card-tag">Food & Drink</span>
-      <div class="card-amount"><span class="currency">KRW</span>180,000</div>
-      <p class="card-desc">Omakase dinner for 2 in Gangnam.</p>
-      <div class="card-meta"><span>142 responses</span><span>·</span><span>18h remaining</span></div>
-    </div>
-
-    <div class="filter-tabs">
-      <button class="filter-tab active" onclick="setFilter(this)">All</button>
-      <button class="filter-tab" onclick="setFilter(this)">My Filter</button>
-      <button class="filter-tab" onclick="setFilter(this)">Custom</button>
-    </div>
-
-    <div class="result-summary">
-      <div class="result-bar">
-        <div class="result-bar-header">
-          <span class="result-bar-label">💸 Too Expensive</span>
-          <span class="result-pct" style="color:var(--expensive)">65%</span>
-        </div>
-        <div class="bar-track"><div class="bar-fill" style="width:65%;background:var(--expensive)"></div></div>
-      </div>
-      <div class="result-bar">
-        <div class="result-bar-header">
-          <span class="result-bar-label">✅ Fair Price</span>
-          <span class="result-pct" style="color:var(--fair)">25%</span>
-        </div>
-        <div class="bar-track"><div class="bar-fill" style="width:25%;background:var(--fair)"></div></div>
-      </div>
-      <div class="result-bar">
-        <div class="result-bar-header">
-          <span class="result-bar-label">🤑 Great Deal</span>
-          <span class="result-pct" style="color:var(--deal)">10%</span>
-        </div>
-        <div class="bar-track"><div class="bar-fill" style="width:10%;background:var(--deal)"></div></div>
-      </div>
-      <div class="verdict-box" style="background:rgba(214,78,58,0.08);border:1px solid rgba(214,78,58,0.2);color:var(--expensive)">
-        💸 Most people say it's too expensive
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <p class="section-title">Breakdown by Group</p>
-      <div class="demo-row">
-        <div class="demo-row-label">Gender</div>
-        <div class="demo-split"><span class="demo-split-label">Female</span><div class="demo-split-track"><div style="width:72%;background:var(--expensive);opacity:0.7"></div><div style="width:20%;background:var(--fair);opacity:0.7"></div><div style="width:8%;background:var(--deal);opacity:0.7"></div></div><span style="font-size:11px;color:var(--ink-faint);width:32px;text-align:right">72%</span></div>
-        <div class="demo-split"><span class="demo-split-label">Male</span><div class="demo-split-track"><div style="width:58%;background:var(--expensive);opacity:0.7"></div><div style="width:30%;background:var(--fair);opacity:0.7"></div><div style="width:12%;background:var(--deal);opacity:0.7"></div></div><span style="font-size:11px;color:var(--ink-faint);width:32px;text-align:right">58%</span></div>
-      </div>
-      <div class="demo-row">
-        <div class="demo-row-label">Age</div>
-        <div class="demo-split"><span class="demo-split-label">20s</span><div class="demo-split-track"><div style="width:80%;background:var(--expensive);opacity:0.7"></div><div style="width:14%;background:var(--fair);opacity:0.7"></div><div style="width:6%;background:var(--deal);opacity:0.7"></div></div><span style="font-size:11px;color:var(--ink-faint);width:32px;text-align:right">80%</span></div>
-        <div class="demo-split"><span class="demo-split-label">30s</span><div class="demo-split-track"><div style="width:60%;background:var(--expensive);opacity:0.7"></div><div style="width:30%;background:var(--fair);opacity:0.7"></div><div style="width:10%;background:var(--deal);opacity:0.7"></div></div><span style="font-size:11px;color:var(--ink-faint);width:32px;text-align:right">60%</span></div>
-        <div class="demo-split"><span class="demo-split-label">40s+</span><div class="demo-split-track"><div style="width:45%;background:var(--expensive);opacity:0.7"></div><div style="width:40%;background:var(--fair);opacity:0.7"></div><div style="width:15%;background:var(--deal);opacity:0.7"></div></div><span style="font-size:11px;color:var(--ink-faint);width:32px;text-align:right">45%</span></div>
-      </div>
-    </div>
-
-    <div class="comment-section">
-      <p class="section-title">Top Comments</p>
-      <div class="comment">
-        <div class="comment-header"><span class="comment-user">⚖️ @balanced_spender</span><span style="font-size:10px;color:var(--ink-faint)">★ 18</span></div>
-        <p class="comment-text">For 2 people in Gangnam this is actually reasonable — same quality in Tokyo costs double.</p>
-      </div>
-      <div class="comment">
-        <div class="comment-header"><span class="comment-user">💰 @value_hunter_kr</span><span style="font-size:10px;color:var(--ink-faint)">★ 12</span></div>
-        <p class="comment-text">You can find equally good omakase for 120K if you know where to look.</p>
-      </div>
+    <div class="card" id="results-question-card" style="margin-bottom:14px;cursor:default;"></div>
+    <div class="filter-tabs"><button class="filter-tab active">All</button></div>
+    <div class="result-card" id="results-bars">
+      <div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
     </div>
   </div>
 
-  <!-- ── BOTTOM NAV ── -->
   <nav class="bottom-nav">
     <div class="nav-item active" id="nav-feed" onclick="goScreen('feed')">
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="2" width="8" height="8" rx="2" fill="#1A1714"/><rect x="12" y="2" width="8" height="8" rx="2" fill="#1A1714"/><rect x="2" y="12" width="8" height="8" rx="2" fill="#1A1714"/><rect x="12" y="12" width="8" height="8" rx="2" stroke="#6B6560" stroke-width="1.5"/></svg>
       <span>Feed</span>
     </div>
-    <div class="nav-plus" onclick="goScreen('vote')">
+    <div class="nav-plus" onclick="goScreen('post')">
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2V16M2 9H16" stroke="#FAF8F4" stroke-width="2" stroke-linecap="round"/></svg>
     </div>
     <div class="nav-item" id="nav-results" onclick="goScreen('results')">
@@ -292,69 +209,188 @@
       <span>Results</span>
     </div>
   </nav>
-
-  <!-- PWA Install Banner -->
-  <div class="install-banner" id="install-banner">
-    <p>Add <strong>Worth It?</strong> to your home screen for the best experience.</p>
-    <button onclick="installPWA()">Add</button>
-    <button class="close-banner" onclick="closeBanner()">×</button>
-  </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
-  let selectedVote = null;
-  let deferredPrompt = null;
+  const { createClient } = supabase;
+  const sb = createClient(
+    'https://umrnupowquzziyifrygq.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVtcm51cG93cXV6eml5aWZyeWdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTY1ODMsImV4cCI6MjA5NTI3MjU4M30.lNeFBXvWBY30khaoXoyBjxTIs2PL3wY08YLP2X6uTXs'
+  );
+
+  let currentQ = null, selectedVote = null, postCategory = null, allQuestions = [];
 
   function goScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('screen-' + id).classList.add('active');
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    const navEl = document.getElementById('nav-' + id);
-    if (navEl) navEl.classList.add('active');
+    const nav = document.getElementById('nav-' + id);
+    if (nav) nav.classList.add('active');
     window.scrollTo(0, 0);
   }
 
-  function goVote() { goScreen('vote'); }
-  function goResults() { goScreen('results'); }
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  async function loadFeed() {
+    const { data, error } = await sb.from('questions').select('*').order('created_at', { ascending: false });
+    if (error) { document.getElementById('feed-list').innerHTML = '<div class="loading">Failed to load. Please refresh.</div>'; return; }
+    allQuestions = data || [];
+    renderFeed(allQuestions);
+  }
+
+  function renderFeed(questions) {
+    const list = document.getElementById('feed-list');
+    if (!questions.length) { list.innerHTML = '<div class="loading">No questions yet. Be the first to ask!</div>'; return; }
+    list.innerHTML = questions.map((q, i) => `
+      <div class="card ${i === 0 ? 'featured' : ''}" onclick="openVote('${q.id}')">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <span class="card-tag">${q.category}</span>
+          ${i === 0 ? '<span style="font-size:9px;font-weight:700;color:var(--accent-dark);letter-spacing:0.08em;text-transform:uppercase;">Latest</span>' : ''}
+        </div>
+        <div class="card-amount"><span class="currency">${q.currency}</span>${Number(q.amount).toLocaleString()}</div>
+        <p class="card-desc">${q.situation}</p>
+        <div class="card-meta"><span>${q.responses || 0} responses</span><span>·</span><span>${timeLeft(q.expires_at)}</span></div>
+      </div>`).join('');
+  }
 
   function filterCat(el, cat) {
     document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
     el.classList.add('active');
+    const filtered = cat === 'All' ? allQuestions : allQuestions.filter(q => q.category === cat);
+    renderFeed(filtered);
   }
 
-  function setFilter(el) {
-    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
+  function timeLeft(expires) {
+    const diff = new Date(expires) - new Date();
+    if (diff < 0) return 'Closed';
+    const h = Math.floor(diff / 3600000);
+    return h < 24 ? `${h}h left` : `${Math.floor(h/24)}d left`;
+  }
+
+  async function openVote(id) {
+    currentQ = allQuestions.find(q => q.id === id);
+    if (!currentQ) return;
+    document.getElementById('vote-cat').textContent = currentQ.category;
+    document.getElementById('vote-currency').textContent = currentQ.currency + ' ';
+    document.getElementById('vote-amount').textContent = Number(currentQ.amount).toLocaleString();
+    document.getElementById('vote-desc').textContent = currentQ.situation;
+    document.getElementById('vote-count').textContent = `${currentQ.responses || 0} responses`;
+    selectedVote = null;
+    document.querySelectorAll('.vote-option').forEach(o => o.className = 'vote-option');
+    document.getElementById('submit-btn').style.display = 'none';
+    document.getElementById('comment-box').style.display = 'none';
+    document.getElementById('comment-input').value = '';
+    goScreen('vote');
   }
 
   function selectVote(type) {
     selectedVote = type;
-    document.querySelectorAll('.vote-option').forEach(o => {
-      o.className = 'vote-option';
-    });
-    document.getElementById('opt-' + type).className = 'vote-option selected-' + type;
+    document.querySelectorAll('.vote-option').forEach(o => o.className = 'vote-option');
+    document.getElementById('opt-' + type).className = 'vote-option sel-' + type;
     document.getElementById('submit-btn').style.display = 'block';
+    document.getElementById('comment-box').style.display = 'block';
   }
 
-  // PWA
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    setTimeout(() => document.getElementById('install-banner').classList.add('show'), 3000);
-  });
-
-  function installPWA() {
-    if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
-    closeBanner();
+  function updateCharCount() {
+    document.getElementById('char-count').textContent = document.getElementById('comment-input').value.length;
   }
 
-  function closeBanner() {
-    document.getElementById('install-banner').classList.remove('show');
+  async function submitVote() {
+    if (!selectedVote || !currentQ) return;
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true; btn.textContent = 'Submitting...';
+    const comment = document.getElementById('comment-input').value.trim();
+    const { error } = await sb.from('votes').insert({ question_id: currentQ.id, verdict: selectedVote, comment: comment || null });
+    if (error) { showToast('Something went wrong. Try again!'); btn.disabled = false; btn.textContent = 'Submit Verdict →'; return; }
+    await sb.from('questions').update({ responses: (currentQ.responses || 0) + 1 }).eq('id', currentQ.id);
+    currentQ.responses = (currentQ.responses || 0) + 1;
+    showToast('Verdict submitted! 🎉');
+    await loadResults(currentQ.id);
+    goScreen('results');
+    btn.disabled = false; btn.textContent = 'Submit Verdict →';
+    loadFeed();
   }
 
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
+  async function loadResults(id) {
+    const q = allQuestions.find(q => q.id === id) || currentQ;
+    if (!q) return;
+    document.getElementById('results-question-card').innerHTML = `
+      <span class="card-tag">${q.category}</span>
+      <div class="card-amount" style="font-size:28px;"><span class="currency">${q.currency}</span>${Number(q.amount).toLocaleString()}</div>
+      <p class="card-desc">${q.situation}</p>
+      <div class="card-meta"><span>${q.responses || 0} responses</span><span>·</span><span>${timeLeft(q.expires_at)}</span></div>`;
+    const { data: votes } = await sb.from('votes').select('verdict').eq('question_id', id);
+    const total = votes?.length || 0;
+    const exp = votes?.filter(v => v.verdict === 'expensive').length || 0;
+    const fair = votes?.filter(v => v.verdict === 'fair').length || 0;
+    const deal = votes?.filter(v => v.verdict === 'deal').length || 0;
+    const pct = n => total ? Math.round(n / total * 100) : 0;
+    const ePct = pct(exp), fPct = pct(fair), dPct = pct(deal);
+    const topVerdict = ePct >= fPct && ePct >= dPct ? '💸 Most people say it\'s too expensive'
+      : fPct >= dPct ? '✅ Most people think it\'s fair' : '🤑 Most people think it\'s a great deal';
+    const topColor = ePct >= fPct && ePct >= dPct ? 'var(--expensive)' : fPct >= dPct ? 'var(--fair)' : 'var(--deal)';
+    const topBg = ePct >= fPct && ePct >= dPct ? 'rgba(214,78,58,0.08)' : fPct >= dPct ? 'rgba(74,124,89,0.08)' : 'rgba(46,106,168,0.08)';
+    document.getElementById('results-bars').innerHTML = total === 0
+      ? '<div class="loading">No votes yet. Be the first!</div>'
+      : `<div class="result-bar">
+          <div class="result-bar-header"><span class="result-bar-label">💸 Too Expensive</span><span class="result-pct" style="color:var(--expensive)">${ePct}%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:${ePct}%;background:var(--expensive)"></div></div>
+        </div>
+        <div class="result-bar">
+          <div class="result-bar-header"><span class="result-bar-label">✅ Fair Price</span><span class="result-pct" style="color:var(--fair)">${fPct}%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:${fPct}%;background:var(--fair)"></div></div>
+        </div>
+        <div class="result-bar">
+          <div class="result-bar-header"><span class="result-bar-label">🤑 Great Deal</span><span class="result-pct" style="color:var(--deal)">${dPct}%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:${dPct}%;background:var(--deal)"></div></div>
+        </div>
+        <div class="verdict-box" style="background:${topBg};border:1px solid ${topColor}33;color:${topColor}">${topVerdict}</div>
+        <div style="margin-top:12px;font-size:11px;color:var(--ink-faint);text-align:center;">${total} total vote${total !== 1 ? 's' : ''}</div>`;
   }
+
+  function selectPostCat(el, cat) {
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    postCategory = cat;
+    checkPostReady();
+  }
+
+  function checkPostReady() {
+    const amt = document.getElementById('post-amount').value;
+    const sit = document.getElementById('post-situation').value.trim();
+    document.getElementById('post-btn').disabled = !(postCategory && amt && sit);
+  }
+
+  async function submitQuestion() {
+    const btn = document.getElementById('post-btn');
+    btn.disabled = true; btn.textContent = 'Posting...';
+    const { data, error } = await sb.from('questions').insert({
+      category: postCategory,
+      currency: document.getElementById('post-currency').value,
+      amount: parseInt(document.getElementById('post-amount').value),
+      situation: document.getElementById('post-situation').value.trim(),
+    }).select().single();
+    if (error) { showToast('Failed to post. Try again!'); btn.disabled = false; btn.textContent = 'Post Question'; return; }
+    showToast('Question posted! 🎉');
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('post-amount').value = '';
+    document.getElementById('post-situation').value = '';
+    postCategory = null;
+    btn.textContent = 'Post Question';
+    await loadFeed();
+    allQuestions.unshift(data);
+    await loadResults(data.id);
+    goScreen('feed');
+  }
+
+  loadFeed();
 </script>
 </body>
 </html>
